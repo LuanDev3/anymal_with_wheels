@@ -1,8 +1,9 @@
-<launch>
+  <launch>
   <arg name="x" default="0" />
   <arg name="y" default="0" />
   <arg name="z" default="1" />
   <arg name="yaw" default="0" />
+  <arg name="namespace" default="aww" />
 
   <!-- Configuration of Jackal which you would like to simulate.
        See jackal_description for details. -->
@@ -14,5 +15,5 @@
 
   <!-- Spawn AWW -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-	      args="-urdf -model aww -param robot_description -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)" />
+	      args="-urdf -model aww -param robot_description -robot_namespace $(arg namespace) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)" />
 </launch>

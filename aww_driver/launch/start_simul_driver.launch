@@ -1,0 +1,9 @@
+<launch>
+    <arg name="joint_config" default="$(find aww_driver)/config/joint_parameters.yml"/>
+    <arg name="home_config" default="$(find aww_driver)/config/home.yml"/>
+    <node name="aww_driver_simul" pkg="aww_driver" type="aww_driver_simul.py" output="screen">
+        <param name="joint_config" value="$(arg joint_config)"/>
+        <param name="home" value="$(arg home_config)"/>
+    </node>
+    
+</launch>

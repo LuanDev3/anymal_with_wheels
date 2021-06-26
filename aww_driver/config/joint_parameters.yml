@@ -1,0 +1,95 @@
+LF_HAA:
+  limits:
+    effort: 80.0
+    lower: -0.72
+    upper: 0.49
+    velocity: 7.5
+  wheeled_position: 0.0
+
+LF_HFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: 1.18
+
+LF_KFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: -2.12
+
+RF_HAA:
+  limits:
+    effort: 80.0
+    lower: -0.49
+    upper: 0.72
+    velocity: 7.5
+  wheeled_position: 0.0
+
+RF_HFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: 1.18
+
+RF_KFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: -2.12
+
+LH_HAA:
+  limits:
+    effort: 80.0
+    lower: -0.72
+    upper: 0.49
+    velocity: 7.5
+  wheeled_position: 0.0
+
+LH_HFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: -1.18
+
+LH_KFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: 2.12
+
+RH_HAA:
+  limits:
+    effort: 80.0
+    lower: -0.49
+    upper: 0.72
+    velocity: 7.5
+  wheeled_position: 0.0
+
+RH_HFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: -1.18
+
+RH_KFE:
+  limits:
+    effort: 80.0
+    lower: -9.42477796077
+    upper: 9.42477796077
+    velocity: 7.5
+  wheeled_position: 2.12
