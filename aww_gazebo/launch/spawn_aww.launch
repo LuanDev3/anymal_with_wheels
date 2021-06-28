@@ -1,7 +1,7 @@
   <launch>
   <arg name="x" default="0" />
   <arg name="y" default="0" />
-  <arg name="z" default="1" />
+  <arg name="z" default="0.2" />
   <arg name="yaw" default="0" />
   <arg name="namespace" default="aww" />
 
