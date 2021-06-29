@@ -3,9 +3,8 @@
 <launch>
   <arg name="config" default="base" />
 
-  <param name="robot_description"
-         command="$(find xacro)/xacro $(find aww_description)/urdf/anymal_with_wheels.urdf.xacro
-                    --inorder" />
+  <param name="aww/robot_description"
+         command="$(find xacro)/xacro $(find aww_description)/urdf/anymal_with_wheels.urdf.xacro" />
                     
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" ns="aww" type="robot_state_publisher" />
 </launch>

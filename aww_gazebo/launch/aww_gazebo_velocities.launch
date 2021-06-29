@@ -1,0 +1,10 @@
+<launch>
+    <!-- Load wheel controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find aww_gazebo)/config/wheels_velocities.yaml" command="load"/>
+  
+  
+    <!-- load the controllers -->
+    <node name="velocity_control_spawner" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen" ns="/aww" args="aww_velocity_controller"/>
+  
+  </launch>

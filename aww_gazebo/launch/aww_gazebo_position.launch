@@ -4,7 +4,7 @@
   
   
     <!-- load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    <node name="position_control_spawner" pkg="controller_manager" type="spawner" respawn="false"
       output="screen" ns="/aww" args="LF_HAA_position_controller
                                       LF_HFE_position_controller
                                       LF_KFE_position_controller

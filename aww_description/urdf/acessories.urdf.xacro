@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<xacro:include filename="$(find aww_description)/urdf/acessories/velodyne.urdf.xacro" />
+
+	<xacro:vlp16
+          	parent_link="base"
+          	topic="/aww/velodyne/points">
+          	<origin rpy="0 0 0" xyz="0.364 0.0 0.0635"/>
+    </xacro:vlp16>
+
+</robot>
