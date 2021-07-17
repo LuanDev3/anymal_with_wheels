@@ -1,0 +1,11 @@
+structure:
+  linear_analogic: 1
+  rotation_analogic: 0
+  linear_discrete: 6
+  rotation_discrete: 5
+  boost: 5
+gains:
+  linear: 0.15
+  rotation: 0.85
+  linear_boost: 0.3
+  rotation_boost: 0.2

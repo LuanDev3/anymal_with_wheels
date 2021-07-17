@@ -15,8 +15,8 @@ aww:
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.03]
     cmd_vel_timeout: 0.25
 
-    k_l: 0.1
-    k_r: 0.1
+    k_l: 0.01
+    k_r: 0.01
 
     # Odometry fused with IMU is published by robot_localization, so
     # no need to publish a TF based on encoders alone.
@@ -25,6 +25,7 @@ aww:
     # Wheel separation and radius multipliers
     wheel_separation_multiplier: 1.0 # default: 1.0
     wheel_radius_multiplier    : 1.0 # default: 1.0
+    wheel_separation           : 0.434
 
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
