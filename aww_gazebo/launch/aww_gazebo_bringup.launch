@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <launch>
 
     <arg name="rviz" default="false"/>
@@ -6,6 +8,17 @@
     <arg name="z" default="0.4"/>
     <arg name="yaw" default="0.0"/>
     <arg name="gui" default="true" />
+    <arg name="description_name"         default="robot_description"/>
+    <arg name="description_file"         default="$(find aww_description)/urdf/anymal_with_wheels.urdf"/>
+    <arg name="joint_states_topic"       default="joint_states"/>
+
+    <param name="$(arg description_name)" textfile="$(arg description_file)"/>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" ns="aww" type="joint_state_publisher" output="screen">
+      <param name="rate"              value="100"/>
+      <remap from="robot_description" to="$(arg description_name)"/>
+      <remap from="joint_states"      to="$(arg joint_states_topic)"/>
+    </node>
 
     <!-- Launch Gazebo  -->
     <include file="$(find aww_gazebo)/launch/world_construction.launch">
@@ -24,10 +37,10 @@
 
     <!-- Run Rviz and load the default config to see the state of the move_group node -->
     <group if="$(arg rviz)">
-      <include file="$(find aww_gazebo)/launch/aww_rviz.launch">
-      <arg name="rviz_config" value="$(find aww_gazebo)/launch/aww.rviz"/>
-      <arg name="debug" value="false"/>
-      </include>
+      <!-- RViz -->
+      <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find aww_description)/config/rviz/standalone.rviz"
+        output="screen"/>
     </group>
 
 </launch>

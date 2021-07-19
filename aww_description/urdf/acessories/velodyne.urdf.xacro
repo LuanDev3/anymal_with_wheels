@@ -33,7 +33,7 @@
     </link>
 
     <!-- import VLP-16 for velodyne_description package -->
-    <xacro:VLP-16 parent="lidar_cage" topic="${topic}">
+    <xacro:VLP-16 parent="lidar_cage" topic="${topic}" hz="20" collision_range="0.15" >
       <origin xyz="0 0 0.03" rpy="0 0 0" />
     </xacro:VLP-16>
   </xacro:macro>
