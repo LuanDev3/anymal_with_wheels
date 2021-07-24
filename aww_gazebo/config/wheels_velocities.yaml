@@ -15,12 +15,12 @@ aww:
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.03]
     cmd_vel_timeout: 0.25
 
-    k_l: 0.01
-    k_r: 0.01
+    #k_l: 0.01
+    #k_r: 0.01
 
     # Odometry fused with IMU is published by robot_localization, so
     # no need to publish a TF based on encoders alone.
-    enable_odom_tf: true
+    enable_odom_tf: false
 
     # Wheel separation and radius multipliers
     wheel_separation_multiplier: 1.0 # default: 1.0
@@ -32,12 +32,12 @@ aww:
     linear:
       x:
         has_velocity_limits    : true
-        max_velocity           : 2.0   # m/s
+        max_velocity           : 10.0   # m/s
         has_acceleration_limits: true
         max_acceleration       : 20.0   # m/s^2
     angular:
       z:
         has_velocity_limits    : true
-        max_velocity           : 4.0   # rad/s
+        max_velocity           : 10.0   # rad/s
         has_acceleration_limits: true
-        max_acceleration       : 25.0   # rad/s^2
+        max_acceleration       : 50.0   # rad/s^2
