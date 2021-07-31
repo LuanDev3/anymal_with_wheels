@@ -14,12 +14,6 @@
 
     <param name="$(arg description_name)" textfile="$(arg description_file)"/>
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" ns="aww" type="joint_state_publisher" output="screen">
-      <param name="rate"              value="100"/>
-      <remap from="robot_description" to="$(arg description_name)"/>
-      <remap from="joint_states"      to="$(arg joint_states_topic)"/>
-    </node>
-
     <!-- Launch Gazebo  -->
     <include file="$(find aww_gazebo)/launch/world_construction.launch">
       <arg name="x" value="$(arg x)"/>
@@ -41,6 +35,20 @@
       <node name="rviz" pkg="rviz" type="rviz"
         args="-d $(find aww_description)/config/rviz/standalone.rviz"
         output="screen"/>
+      <node name="joint_state_publisher" pkg="joint_state_publisher_gui" ns="aww" type="joint_state_publisher_gui" output="screen">
+        <param name="use_gui"           value="true"/>
+        <param name="rate"              value="100"/>
+        <remap from="robot_description" to="$(arg description_name)"/>
+        <remap from="joint_states"      to="$(arg joint_states_topic)"/>
+      </node>
+    </group>
+
+    <group unless="$(arg rviz)">
+      <node name="joint_state_publisher" pkg="joint_state_publisher" ns="aww" type="joint_state_publisher" output="screen">
+        <param name="rate"              value="100"/>
+        <remap from="robot_description" to="$(arg description_name)"/>
+        <remap from="joint_states"      to="$(arg joint_states_topic)"/>
+      </node>
     </group>
 
 </launch>
