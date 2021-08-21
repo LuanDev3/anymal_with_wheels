@@ -9,7 +9,7 @@ This project depends directly on the Anymal C simple description project develop
 -   Using git (or download the zip file) clone this repository into the "source code" folder of your ROS workspace (e.g. ~/catkin_ws/src ).
 
 ```sh
-$ cd ~/catkin_ws/src
+$ cd ~/$YOUR_WORSKPACE/src
 $ git clone https://github.com/LuanDev3/anymal_with_wheels.git
 ```
 
@@ -18,4 +18,10 @@ $ git clone https://github.com/LuanDev3/anymal_with_wheels.git
 ```sh
 $ chmod +x install.sh
 ./install.sh
+```
+
+- To compile the code run:
+```sh
+$ cd ~/$YOUR_WORSKPACE/src
+catkin_make
 ```
