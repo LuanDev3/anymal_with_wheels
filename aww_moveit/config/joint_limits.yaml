@@ -1,0 +1,84 @@
+# joint_limits.yaml allows the dynamics properties specified in the URDF to be overwritten or augmented as needed
+# Specific joint properties can be changed with the keys [max_position, min_position, max_velocity, max_acceleration]
+# Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
+joint_limits:
+  LF_HAA:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LF_HFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LF_KFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LF_wheel:
+    has_velocity_limits: false
+    max_velocity: 0
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LH_HAA:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LH_HFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LH_KFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  LH_wheel:
+    has_velocity_limits: false
+    max_velocity: 0
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RF_HAA:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RF_HFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RF_KFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RF_wheel:
+    has_velocity_limits: false
+    max_velocity: 0
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RH_HAA:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RH_HFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RH_KFE:
+    has_velocity_limits: true
+    max_velocity: 7.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  RH_wheel:
+    has_velocity_limits: false
+    max_velocity: 0
+    has_acceleration_limits: false
+    max_acceleration: 0

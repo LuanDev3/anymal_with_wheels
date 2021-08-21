@@ -1,0 +1,38 @@
+controller_list:
+  - name: fake_front_left_leg_controller
+    type: $(arg execution_type)
+    joints:
+      - LF_HAA
+      - LF_HFE
+      - LF_KFE
+  - name: fake_front_right_leg_controller
+    type: $(arg execution_type)
+    joints:
+      - RF_HAA
+      - RF_HFE
+      - RF_KFE
+  - name: fake_rear_left_leg_controller
+    type: $(arg execution_type)
+    joints:
+      - LH_HAA
+      - LH_HFE
+      - LH_KFE
+  - name: fake_rear_right_leg_controller
+    type: $(arg execution_type)
+    joints:
+      - RH_HAA
+      - RH_HFE
+      - RH_KFE
+  - name: fake_body_controller
+    type: $(arg execution_type)
+    joints:
+      []
+initial:  # Define initial robot poses.
+  - group: front_left_leg
+    pose: FL_home
+  - group: front_right_leg
+    pose: FR_home
+  - group: rear_left_leg
+    pose: RL_home
+  - group: rear_right_leg
+    pose: RR_home

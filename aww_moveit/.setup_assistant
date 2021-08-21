@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: aww_description
+    relative_path: urdf/anymal_with_wheels.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/aww.srdf
+  CONFIG:
+    author_name: Luan Nunes
+    author_email: professional.luan@gmail.com
+    generated_timestamp: 1629569330
