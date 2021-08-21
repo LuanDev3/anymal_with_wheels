@@ -13,18 +13,9 @@ $ cd ~/catkin_ws/src
 $ git clone https://github.com/LuanDev3/anymal_with_wheels.git
 ```
 
--   Fixing package dependencies:
+-   To install dependencies, run:
 
 ```sh
-$ cd ~/catkin_ws
-$ rosstack profile && rospack profile
-$ rosdep install --from-paths src/anymal_with_wheels --ignore-src -r -y
-```
-
--   Compile your ROS workspace directory (e.g. ~/catkin-ws ):
-
-```sh
-$ cd ~/catkin_ws
-$ catkin_make
-$ source devel/setup.bash # Set the appropriate bash extension
+$ chmod +x install.sh
+./install.sh
 ```
