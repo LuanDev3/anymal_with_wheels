@@ -4,8 +4,9 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /RobotModel1/Status1
+        - /RobotModel1
         - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5286195278167725
     Tree Height: 416
   - Class: rviz/Selection
@@ -346,207 +347,19 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        LF_HAA:
-          Value: true
-        LF_HFE:
-          Value: true
-        LF_HIP:
-          Value: true
-        LF_KFE:
-          Value: true
-        LF_LEG:
-          Value: true
-        LF_SHANK:
-          Value: true
-        LF_THIGH:
-          Value: true
-        LF_hip_fixed:
-          Value: true
-        LF_shank_fixed:
-          Value: true
-        LF_thigh_fixed:
-          Value: true
-        LF_wheel_link:
-          Value: true
-        LH_HAA:
-          Value: true
-        LH_HFE:
-          Value: true
-        LH_HIP:
-          Value: true
-        LH_KFE:
-          Value: true
-        LH_LEG:
-          Value: true
-        LH_SHANK:
-          Value: true
-        LH_THIGH:
-          Value: true
-        LH_hip_fixed:
-          Value: true
-        LH_shank_fixed:
-          Value: true
-        LH_thigh_fixed:
-          Value: true
-        LH_wheel_link:
-          Value: true
-        RF_HAA:
-          Value: true
-        RF_HFE:
-          Value: true
-        RF_HIP:
-          Value: true
-        RF_KFE:
-          Value: true
-        RF_LEG:
-          Value: true
-        RF_SHANK:
-          Value: true
-        RF_THIGH:
-          Value: true
-        RF_hip_fixed:
-          Value: true
-        RF_shank_fixed:
-          Value: true
-        RF_thigh_fixed:
-          Value: true
-        RF_wheel_link:
-          Value: true
-        RH_HAA:
-          Value: true
-        RH_HFE:
-          Value: true
-        RH_HIP:
-          Value: true
-        RH_KFE:
-          Value: true
-        RH_LEG:
-          Value: true
-        RH_SHANK:
-          Value: true
-        RH_THIGH:
-          Value: true
-        RH_hip_fixed:
-          Value: true
-        RH_shank_fixed:
-          Value: true
-        RH_thigh_fixed:
-          Value: true
-        RH_wheel_link:
-          Value: true
-        base:
-          Value: true
-        base_inertia:
-          Value: true
-        battery:
-          Value: true
-        bottom_shell:
-          Value: true
-        docking_hatch_cover:
-          Value: true
-        face_front:
-          Value: true
-        face_rear:
-          Value: true
-        hatch:
-          Value: true
-        imu_link:
-          Value: true
-        lidar_cage:
-          Value: true
-        remote:
-          Value: true
-        top_shell:
-          Value: true
-        velodyne:
-          Value: true
-        velodyne_base_link:
-          Value: true
       Marker Scale: 0.5
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        base:
-          LF_HAA:
-            LF_HIP:
-              LF_hip_fixed:
-                LF_HFE:
-                  LF_THIGH:
-                    LF_thigh_fixed:
-                      LF_KFE:
-                        LF_SHANK:
-                          LF_shank_fixed:
-                            LF_LEG:
-                              LF_wheel_link:
-                                {}
-          LH_HAA:
-            LH_HIP:
-              LH_hip_fixed:
-                LH_HFE:
-                  LH_THIGH:
-                    LH_thigh_fixed:
-                      LH_KFE:
-                        LH_SHANK:
-                          LH_shank_fixed:
-                            LH_LEG:
-                              LH_wheel_link:
-                                {}
-          RF_HAA:
-            RF_HIP:
-              RF_hip_fixed:
-                RF_HFE:
-                  RF_THIGH:
-                    RF_thigh_fixed:
-                      RF_KFE:
-                        RF_SHANK:
-                          RF_shank_fixed:
-                            RF_LEG:
-                              RF_wheel_link:
-                                {}
-          RH_HAA:
-            RH_HIP:
-              RH_hip_fixed:
-                RH_HFE:
-                  RH_THIGH:
-                    RH_thigh_fixed:
-                      RH_KFE:
-                        RH_SHANK:
-                          RH_shank_fixed:
-                            RH_LEG:
-                              RH_wheel_link:
-                                {}
-          base_inertia:
-            {}
-          battery:
-            {}
-          bottom_shell:
-            {}
-          docking_hatch_cover:
-            {}
-          face_front:
-            {}
-          face_rear:
-            {}
-          hatch:
-            {}
-          imu_link:
-            {}
-          lidar_cage:
-            velodyne_base_link:
-              velodyne:
-                {}
-          remote:
-            {}
-          top_shell:
-            {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -590,10 +403,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3899998664855957
+      Pitch: 0.36499959230422974
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.8220985531806946
+      Yaw: 0.7320984601974487
     Saved: ~
 Window Geometry:
   Displays:

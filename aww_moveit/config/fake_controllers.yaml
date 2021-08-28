@@ -23,10 +23,21 @@ controller_list:
       - RH_HAA
       - RH_HFE
       - RH_KFE
-  - name: fake_body_controller
+  - name: fake_all_legs_controller
     type: $(arg execution_type)
     joints:
-      []
+      - LF_HAA
+      - LF_HFE
+      - LF_KFE
+      - LH_HAA
+      - LH_HFE
+      - LH_KFE
+      - RF_HAA
+      - RF_HFE
+      - RF_KFE
+      - RH_HAA
+      - RH_HFE
+      - RH_KFE
 initial:  # Define initial robot poses.
   - group: front_left_leg
     pose: FL_home

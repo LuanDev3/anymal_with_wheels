@@ -220,7 +220,7 @@ rear_right_leg:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-body:
+all_legs:
   planner_configs:
     - SBL
     - EST

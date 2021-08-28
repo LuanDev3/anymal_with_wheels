@@ -61,20 +61,11 @@
         <joint name="RH_shank_fixed_RH_LEG" />
         <joint name="RH_wheel" />
     </group>
-    <group name="body">
-        <joint name="base_battery" />
-        <joint name="base_bottom_shell" />
-        <joint name="base_face_front" />
-        <joint name="base_face_rear" />
-        <joint name="base_hatch" />
-        <joint name="base_remote" />
-        <joint name="base_to_base_inertia" />
-        <joint name="base_to_docking_hatch_cover" />
-        <joint name="base_to_lidar_cage" />
-        <joint name="velodyne_base_mount_joint" />
-        <joint name="velodyne_base_scan_joint" />
-        <joint name="base_top_shell" />
-        <joint name="imu_joint" />
+    <group name="all_legs">
+        <group name="front_right_leg" />
+        <group name="front_left_leg" />
+        <group name="rear_left_leg" />
+        <group name="rear_right_leg" />
     </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="RR_home" group="rear_right_leg">
