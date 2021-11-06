@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <launch>
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
   <arg name="load_robot_description" default="false"/>
@@ -9,7 +11,7 @@
   <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find aww_description)/urdf/anymal_with_wheels.urdf.xacro'"/>
 
   <!-- The semantic description that corresponds to the URDF -->
-  <param name="$(arg robot_description)_semantic" textfile="$(find aww_moveit)/config/aww.srdf" />
+  <param name="/aww/robot_description_semantic" textfile="$(find aww_moveit)/config/aww.srdf" />
 
   <!-- Load updated joint limits (override information from URDF) -->
   <group ns="$(arg robot_description)_planning">

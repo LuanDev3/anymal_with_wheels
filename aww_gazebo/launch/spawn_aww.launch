@@ -5,13 +5,11 @@
   <arg name="yaw" default="0" />
   <arg name="namespace" default="/aww" />
 
-  <!-- Configuration of Jackal which you would like to simulate.
+  <!-- Configuration of aww which you would like to simulate.
        See jackal_description for details. -->
 
-  <!-- Load Jackal's description, controllers, and teleop nodes. -->
+  <!-- Load aww's description. -->
   <include file="$(find aww_description)/launch/description.launch"/>
-  <!-- <include file="$(find jackal_control)/launch/control.launch" /> -->
-  <!-- <include file="$(find jackal_control)/launch/teleop.launch" /> -->
 
   <!-- Spawn AWW -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"

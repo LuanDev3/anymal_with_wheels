@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <!-- Load wheel controller configurations from YAML file to parameter server -->
     <rosparam file="$(find aww_gazebo)/config/wheels_velocities.yaml" command="load"/>

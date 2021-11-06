@@ -5,7 +5,10 @@
   <rosparam file="$(find aww_moveit)/config/ros_controllers.yaml" command="load"/>
 
   <!-- Load the controllers -->
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args=""/>
+  <node name="trajectory_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/aww" args="front_left_leg_controller
+                                    front_right_leg_controller
+                                    rear_left_leg_controller
+                                    rear_right_leg_controller"/>
 
 </launch>

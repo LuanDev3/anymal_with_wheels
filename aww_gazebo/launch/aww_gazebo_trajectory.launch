@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Load trajectry controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find aww_gazebo)/config/trajectory_control.yaml" command="load"/>
+    <!-- rosparam file="$(find aww_moveit)/config/ros_controllers.yaml" command="load"/ -->
+  
+  
+    <!-- load the controllers -->
+    <node name="trajectory_control_spawner" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen" ns="/aww" args="front_left_leg_controller
+                                      front_right_leg_controller
+                                      rear_left_leg_controller
+                                      rear_right_leg_controller"/>
+  
+  </launch>

@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <launch>
 
   <!-- GDB Debug Option -->
@@ -19,9 +21,9 @@
   <arg name="max_safe_path_cost" default="1"/>
   <arg name="jiggle_fraction" default="0.05" />
   <arg name="publish_monitored_planning_scene" default="true"/>
-
   <arg name="capabilities" default=""/>
   <arg name="disable_capabilities" default=""/>
+  
   <!-- load these non-default MoveGroup capabilities (space seperated) -->
   <!--
   <arg name="capabilities" value="
@@ -40,7 +42,7 @@
 
   <arg name="load_robot_description" default="true" />
   <!-- load URDF, SRDF and joint_limits configuration -->
-  <include file="$(find aww_moveit)/launch/planning_context.launch">
+  <include ns="aww" file="$(find aww_moveit)/launch/planning_context.launch">
     <arg name="load_robot_description" value="$(arg load_robot_description)" />
   </include>
 
@@ -53,7 +55,7 @@
 
   <!-- Trajectory Execution Functionality -->
   <include ns="move_group" file="$(find aww_moveit)/launch/trajectory_execution.launch.xml" if="$(arg allow_trajectory_execution)">
-    <arg name="moveit_manage_controllers" value="true" />
+    <arg name="moveit_manage_controllers" value="false" />
     <arg name="moveit_controller_manager" value="aww" unless="$(arg fake_execution)"/>
     <arg name="moveit_controller_manager" value="fake" if="$(arg fake_execution)"/>
     <arg name="execution_type" value="$(arg execution_type)" />
@@ -65,14 +67,16 @@
   </include>
 
   <!-- Start the actual move_group node/action server -->
-  <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)">
+  <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="joint_states:=/aww/joint_states $(arg command_args)">
     <!-- Set the display variable, in case OpenGL code is used internally -->
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
 
     <param name="allow_trajectory_execution" value="$(arg allow_trajectory_execution)"/>
+    <param name="robot_description" value="/aww/robot_description"/>
+    <param name="joint_state_publisher" value="/aww/joint_state_publisher"/>
     <param name="max_safe_path_cost" value="$(arg max_safe_path_cost)"/>
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
-
+    <remap from="robot_description" to="/aww/robot_description" />
 
     <!-- Publish the planning scene of the physical robot so that rviz plugin can know actual robot -->
     <param name="planning_scene_monitor/publish_planning_scene" value="$(arg publish_monitored_planning_scene)" />

@@ -17,8 +17,6 @@
 
   <!-- Load the robot specific controller manager; this sets the moveit_controller_manager ROS parameter -->
   <arg name="moveit_controller_manager" default="aww" />
-  <include file="$(find aww_moveit)/launch/$(arg moveit_controller_manager)_moveit_controller_manager.launch.xml">
-    <arg name="execution_type" value="$(arg execution_type)" />
-  </include>
+  <include file="$(find aww_moveit)/launch/$(arg moveit_controller_manager)_moveit_controller_manager.launch.xml"/>
 
 </launch>

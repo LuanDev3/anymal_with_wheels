@@ -86,6 +86,7 @@ class MoveGroupInteface(object):
 
     rospy.loginfo("Starting move_groups node...")
     super(MoveGroupInteface, self).__init__()
+    print sys.argv
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node('move_group_interface', anonymous=True, log_level=getattr(rospy, 'DEBUG'))
 
@@ -95,11 +96,11 @@ class MoveGroupInteface(object):
     self.scene = moveit_commander.PlanningSceneInterface()
 
     rospy.logdebug(" -- Getting robot move groups")
-    self.frontLeftMoveGroup  = moveit_commander.MoveGroupCommander("front_left_leg")
-    self.frontRightMoveGroup = moveit_commander.MoveGroupCommander("front_right_leg")
-    self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg")
-    self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg")
-    self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs")
+    self.frontLeftMoveGroup  = moveit_commander.MoveGroupCommander("front_left_leg", "/aww/robot_description")
+    self.frontRightMoveGroup = moveit_commander.MoveGroupCommander("front_right_leg", "/aww/robot_description")
+    self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "/aww/robot_description")
+    self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "/aww/robot_description")
+    self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "/aww/robot_description")
 
     rospy.logdebug(" -- Setting robot publishers")
     self.frontLeftTrajectoryPublishers  = rospy.Publisher('/move_group/front_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
@@ -204,6 +205,62 @@ class MoveGroupInteface(object):
     (plan, fraction) = moveGroup.compute_cartesian_path(waypoints, 0.01, 0.0)
     return plan, fraction
 
+  def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
+    rospy.loginfo("Moving base forward!")
+    rospy.logdebug(" -- Getting the actual pose for all move groups...")
+    fl_pose = self.frontLeftMoveGroup.get_current_pose().pose
+    fr_pose = self.frontRightMoveGroup.get_current_pose().pose
+    rl_pose = self.rearLeftMoveGroup.get_current_pose().pose
+    rr_pose = self.rearRightMoveGroup.get_current_pose().pose
+
+    # The path for each move group is to move backward the back and by vDisplacement
+    rospy.logdebug(" -- Calculating the linear path ...")
+    norm_factor = 10/vDisplacement
+    points = [x/norm_factor for x in range(1, int(norm_factor*vDisplacement) + 1, int(vDisplacement/10*norm_factor))]
+    fl_waypoints = list()
+    fr_waypoints = list()
+    rl_waypoints = list()
+    rr_waypoints = list()
+    for i in range(numberOfPoints):
+        fl_pose.position.x = fl_pose.position.x - points[i];
+        fr_pose.position.x = fr_pose.position.x - points[i];
+        rl_pose.position.x = rl_pose.position.x - points[i];
+        rr_pose.position.x = rr_pose.position.x - points[i];
+        fl_waypoints.append(copy.deepcopy(fl_pose))
+        fr_waypoints.append(copy.deepcopy(fr_pose))
+        rl_waypoints.append(copy.deepcopy(rl_pose))
+        rr_waypoints.append(copy.deepcopy(rr_pose))
+
+    rospy.loginfo(" -- Computing the cartesian path for the legs")
+    fl_plan, _ = self.frontLeftMoveGroup.compute_cartesian_path(fl_waypoints, 0.01, 0.0)
+    fr_plan, _ = self.frontRightMoveGroup.compute_cartesian_path(fr_waypoints, 0.01, 0.0)
+    rl_plan, _ = self.rearLeftMoveGroup.compute_cartesian_path(rl_waypoints, 0.01, 0.0)
+    rr_plan, _ = self.rearRightMoveGroup.compute_cartesian_path(rr_waypoints, 0.01, 0.0)
+    print fl_plan.joint_trajectory, type(fl_plan.joint_trajectory)
+
+    # rospy.loginfo(" -- Executing the computed paths")
+    # self.frontLeftMoveGroup.execute(fl_plan, wait=True)
+    # self.frontRightMoveGroup.execute(fr_plan, wait=True)
+    # self.rearLeftMoveGroup.execute(rl_plan, wait=True)
+    # self.rearRightMoveGroup.execute(rr_plan, wait=True)
+
+
+
+    # rospy.logdebug(" -- Sending Go action and waiting ...")
+    # self.allLegsMoveGroup.go(allLegsJointGoal, wait=True)
+    # rospy.logdebug(" -- Go action finished, stop for warranty")
+    # self.allLegsMoveGroup.stop()
+
+    # rospy.logdebug(" -- Verifying if the joints are close enough to the desired")
+    # currentJoints = self.allLegsMoveGroup.get_current_joint_values()
+    # resolution = 0.01
+    # if itsCloseEnough(allLegsJointGoal, currentJoints, resolution):
+    #     rospy.loginfo("The joints were moved to te position with a error less tahn %s" % (resolution))
+    # else:
+    #     rospy.logwarn("The joints weren't moved to te position with a error less tahn %s" % (resolution))
+
+
+
 
   def display_trajectory(self, plan):
     # Copy class variables to local variables to make the web tutorials more clear.
@@ -232,10 +289,10 @@ class MoveGroupInteface(object):
     ## END_SUB_TUTORIAL
 
 
-  def executePlan(self, plan, moveGroup):
+  def executePlan(self, plan, moveGroup, wait=True):
 
     moveGroup = getattr(self, moveGroup)
-    moveGroup.execute(plan, wait=True)
+    moveGroup.execute(plan, wait=wait)
 
 
   def wait_for_state_update(self, box_is_known=False, box_is_attached=False, timeout=4):
@@ -284,8 +341,11 @@ def main():
   try:
     interface = MoveGroupInteface()
     result = interface.goToInitialPosition()
-    cartesian_plan, fraction = interface.planCartesianPath('frontRightMoveGroup')
-    interface.executePlan(cartesian_plan, 'frontRightMoveGroup')
+    # cartesian_plan, fraction = interface.planCartesianPath('frontRightMoveGroup')
+    # interface.executePlan(cartesian_plan, 'frontRightMoveGroup')
+    # cartesian_plan, fraction = interface.planCartesianPath('rearRightMoveGroup')
+    # interface.executePlan(cartesian_plan, 'rearRightMoveGroup')
+    interface.moveBodyToFront()
   except rospy.ROSInterruptException:
     return
   except KeyboardInterrupt:

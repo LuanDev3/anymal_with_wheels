@@ -27,8 +27,9 @@ hardware_interface:
 joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
+
 controller_list:
-  - name: front_left_leg_controller
+  - name: /aww/front_left_leg_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -37,7 +38,7 @@ controller_list:
       - LF_HFE
       - LF_KFE
       - LF_wheel
-  - name: front_right_leg_controller
+  - name: /aww/front_right_leg_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -46,7 +47,7 @@ controller_list:
       - RF_HFE
       - RF_KFE
       - RF_wheel
-  - name: rear_left_leg_controller
+  - name: /aww/rear_left_leg_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -55,7 +56,7 @@ controller_list:
       - LH_HFE
       - LH_KFE
       - LH_wheel
-  - name: rear_right_leg_controller
+  - name: /aww/rear_right_leg_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -64,3 +65,13 @@ controller_list:
       - RH_HFE
       - RH_KFE
       - RH_wheel
+
+initial:  # Define initial robot poses.
+- group: front_left_leg
+  pose: FL_home
+- group: front_right_leg
+  pose: FR_home
+- group: rear_left_leg
+  pose: RL_home
+- group: rear_right_leg
+  pose: RR_home

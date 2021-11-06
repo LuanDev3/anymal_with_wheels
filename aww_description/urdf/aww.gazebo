@@ -9,6 +9,13 @@
             <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
             <legacyModeNS>true</legacyModeNS>
         </plugin>
+
+        <plugin name="gazebo_ros_controller_manager" filename="libgazebo_ros_controller_manager.so">
+          <alwaysOn>true</alwaysOn>
+          <updateRate>1000.0</updateRate>
+          <robotParam>robot_description</robotParam>
+          <robotNamespace>/aww</robotNamespace>
+        </plugin>
     </gazebo>
 
     <gazebo>
