@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/Joy.h>
 #include <std_msgs/String.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/filters/voxel_grid.h>
@@ -14,12 +15,21 @@
 #include <pcl/point_types.h>
 #include <sstream>
 
+#define MAX_POINTS 5
+#define OBSTACLE_CONTROL_BUTTON 5
+#define LEGGED_ACTIVATE_BUTTON 6
+#define WHEELED_MODE "wheeled"
+#define LEGGED_MODE "legged"
+
 
 class ModeManager{
   private:
-   ros::Publisher *pub_pc;
-   ros::Publisher *pub_mode;
-   char* atual_mode;
+    ros::Publisher *pub_pc;
+    ros::Publisher *pub_mode;
+    char* actual_mode = "wheeled";
+    bool points_in_cloud;
+    bool joy_obstacle_control_disable;
+    bool joy_legged_active;
 
   public:
     void cloudCallback (const sensor_msgs::PointCloud2ConstPtr& input){
@@ -87,28 +97,37 @@ class ModeManager{
         *cloud_filtered = *cloud_f;
       }
 
-    // Create the PassThrough filtering object
-    pcl::PassThrough<pcl::PointXYZ> pass;
-    pass.setInputCloud (cloud_filtered);
-    pass.setFilterFieldName ("x");
-    pass.setFilterLimits (0.0, 1);
-    pass.filter (*cloud_p);
-    pass.setInputCloud (cloud_p);
-    pass.setFilterFieldName ("y");
-    pass.setFilterLimits (-0.3, 0.3);
-    pass.filter (*cloud_p);
-    pass.setInputCloud (cloud_p);
-    pass.setFilterFieldName ("z");
-    pass.setFilterLimits (-0.6, 0.05);
-    pass.filter (*cloud_p);
-    *cloud_filtered = *cloud_p;
+      // Create the PassThrough filtering object
+      pcl::PassThrough<pcl::PointXYZ> pass;
+      pass.setInputCloud (cloud_filtered);
+      pass.setFilterFieldName ("x");
+      pass.setFilterLimits (0.0, 1);
+      pass.filter (*cloud_p);
+      pass.setInputCloud (cloud_p);
+      pass.setFilterFieldName ("y");
+      pass.setFilterLimits (-0.3, 0.3);
+      pass.filter (*cloud_p);
+      pass.setInputCloud (cloud_p);
+      pass.setFilterFieldName ("z");
+      pass.setFilterLimits (-0.6, 0.05);
+      pass.filter (*cloud_p);
+      *cloud_filtered = *cloud_p;
 
-    pcl::PCLPointCloud2 outcloud;
-    pcl::toPCLPointCloud2 (*cloud_filtered, outcloud);
-    ros::Time time_st = ros::Time::now ();
-    outcloud.header.stamp = time_st.toNSec()/1e3;
-    outcloud.header.frame_id = "/aww/velodyne";
-    this->pub_pc->publish(outcloud);
+      pcl::PCLPointCloud2 outcloud;
+      pcl::toPCLPointCloud2 (*cloud_filtered, outcloud);
+      ros::Time time_st = ros::Time::now ();
+      outcloud.header.stamp = time_st.toNSec()/1e3;
+      outcloud.header.frame_id = "/aww/velodyne";
+      this->pub_pc->publish(outcloud);
+
+      // set the varibale to control robot model
+      points_in_cloud = (outcloud.data.size() > MAX_POINTS) ? true : false;
+    }
+
+    void joyCallback (const sensor_msgs::Joy::ConstPtr& msg) {
+      joy_obstacle_control_disable = (msg->buttons[OBSTACLE_CONTROL_BUTTON] > 0) ? true : false;
+      joy_legged_active = (msg->buttons[LEGGED_ACTIVATE_BUTTON] > 0) ? true : false;
+      ROS_INFO("xxxxxxxxxx %i %i", joy_obstacle_control_disable, joy_legged_active);
     }
 
     void setPublishers(ros::Publisher *pub_pc, ros::Publisher *pub_mode){
@@ -116,14 +135,20 @@ class ModeManager{
         this->pub_mode = pub_mode;
     }
 
-    void publishMode(const char* mode){
-      if (mode != atual_mode){
-        std_msgs::String msg;
-        msg.data = mode;
-        ROS_INFO("mode -> %s", msg.data.c_str());
-        atual_mode = (char*)mode;
-        this->pub_mode->publish(msg);
+    void publishMode(){
+      std_msgs::String msg;
+      if (joy_obstacle_control_disable != true) {
+        msg.data = (points_in_cloud == true) ? WHEELED_MODE : LEGGED_MODE;
       }
+      else {
+        msg.data = (joy_legged_active == false) ? WHEELED_MODE : LEGGED_MODE;
+      }
+      ROS_INFO("yyyyyyyyyyyyyyyy %s %s", actual_mode, msg.data.c_str());
+      if (actual_mode != msg.data.c_str()) {
+        actual_mode = (char*)msg.data.c_str();
+        ROS_INFO("Setting robot mode to: %s", msg.data.c_str());
+      }
+      this->pub_mode->publish(msg);
     }
 };
 
@@ -137,9 +162,10 @@ int main (int argc, char** argv)
   // mode manager instance
   ModeManager mm;
 
-  // Create a ROS publisher/subscriber for the point cloud and mode
-  ros::Subscriber sub = nh.subscribe ("/aww/velodyne/points", 1, &ModeManager::cloudCallback, &mm);
-  ros::Publisher pub_pc = nh.advertise<pcl::PCLPointCloud2> ("test", 1);
+  // Create a ROS publisher/subscriber for the point cloud, joy and mode
+  ros::Subscriber sub_points = nh.subscribe ("/aww/velodyne/points", 1, &ModeManager::cloudCallback, &mm);  
+  ros::Subscriber sub_joy = nh.subscribe ("/joy", 1, &ModeManager::joyCallback, &mm);
+  ros::Publisher pub_pc = nh.advertise<pcl::PCLPointCloud2> ("/aww/velodyne/points/filtered", 1);
   ros::Publisher pub_mode = nh.advertise<std_msgs::String> ("/aww/mode", 1);
 
 
@@ -151,7 +177,7 @@ int main (int argc, char** argv)
   mm.setPublishers(&pub_pc, &pub_mode);
 
   while (ros::ok()){
-    mm.publishMode("wheeled");
+    mm.publishMode();
     ros::spinOnce();
     loop_rate.sleep();
   }
