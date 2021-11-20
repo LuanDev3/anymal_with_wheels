@@ -3,26 +3,17 @@
 <launch>
 
     <arg name="rviz" default="false"/>
-    <arg name="x" default="-4"/>
-    <arg name="y" default="-4"/>
-    <arg name="z" default="0.4"/>
+    <arg name="x" default="8"/>
+    <arg name="y" default="-8"/>
+    <arg name="z" default="0.35"/>
     <arg name="yaw" default="0.0"/>
     <arg name="gui" default="true" />
     <arg name="control_joints" default="false" />
     <arg name="description_name"         default="aww/robot_description"/>
     <arg name="description_file"         default="$(find aww_description)/urdf/anymal_with_wheels.urdf"/>
-    <arg name="joint_states_topic"       default="joint_states"/>
+    <arg name="joint_states_topic"       default="aww/joint_states"/>
 
-    <param name="$(arg description_name)" textfile="$(arg description_file)"/>
-
-    <!-- Launch Gazebo  -->
-    <include file="$(find aww_gazebo)/launch/world_construction.launch">
-      <arg name="x" value="$(arg x)"/>
-      <arg name="y" value="$(arg y)"/>
-      <arg name="z" value="$(arg z)"/>
-      <arg name="yaw" value="$(arg yaw)"/>
-      <arg name="gui" value="$(arg gui)"/>
-    </include>
+<!--     <param name="$(arg description_name)" textfile="$(arg description_file)"/> -->
   
     <!-- ros_control position control dof aww launch file -->
     <include file="$(find aww_gazebo)/launch/aww_gazebo_position.launch" />
@@ -34,12 +25,21 @@
     <include file="$(find aww_gazebo)/launch/aww_gazebo_trajectory.launch" /> 
     <!-- include file="$(find aww_moveit)/launch/ros_controllers.launch" /--> 
 
+    <!-- Launch Gazebo  -->
+    <include file="$(find aww_gazebo)/launch/world_construction.launch">
+      <arg name="x" value="$(arg x)"/>
+      <arg name="y" value="$(arg y)"/>
+      <arg name="z" value="$(arg z)"/>
+      <arg name="yaw" value="$(arg yaw)"/>
+      <arg name="gui" value="$(arg gui)"/>
+    </include>
+
     <!-- launch the moveit move_group -->
     <include file="$(find aww_moveit)/launch/move_group.launch">
       <arg name="allow_trajectory_execution" value="true"/>
       <arg name="fake_execution" value="false"/>
       <arg name="info" value="true"/>
-      <arg name="debug" value="false"/>
+      <arg name="debug" value="true"/>
       <arg name="load_robot_description" value="false"/>
       <arg name="execution_type" value="interpolate" />
     </include>
@@ -52,18 +52,5 @@
         <arg name="debug" value="false"/>
       </include>
     </group>
-
-    <node name="joint_state_publisher" ns="aww" pkg="joint_state_publisher" type="joint_state_publisher" unless="$(arg control_joints)">
-      <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
-      <rosparam param="source_list">[joint_states]</rosparam>
-      <remap from="robot_description" to="robot_description"/>
-      <remap from="joint_states"      to="$(arg joint_states_topic)"/>
-    </node>
-    <node name="joint_state_publisher" ns="aww" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" if="$(arg control_joints)">
-      <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
-      <rosparam param="source_list">[joint_states]</rosparam>
-      <remap from="robot_description" to="robot_description"/>
-      <remap from="joint_states"      to="$(arg joint_states_topic)"/>
-  </node>
 
 </launch>

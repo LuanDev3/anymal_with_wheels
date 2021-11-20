@@ -4,6 +4,7 @@
   <arg name="z" default="0.2" />
   <arg name="yaw" default="0" />
   <arg name="namespace" default="/aww" />
+  <arg name="node_start_delay" default="1.0" /> 
 
   <!-- Configuration of aww which you would like to simulate.
        See jackal_description for details. -->
@@ -12,6 +13,19 @@
   <include file="$(find aww_description)/launch/description.launch"/>
 
   <!-- Spawn AWW -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-	      args="-urdf -model aww -param aww/robot_description -robot_namespace $(arg namespace) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)" />
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "
+	      args="-urdf -model aww -param aww/robot_description -robot_namespace $(arg namespace) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)
+            -J LF_HAA 0.0
+            -J LF_HFE 1.18
+            -J LF_KFE -2.12
+            -J RF_HAA 0.0
+            -J RF_HFE 1.18
+            -J RF_KFE -2.12
+            -J LH_HAA 0.0
+            -J LH_HFE -1.18
+            -J LH_KFE 2.12
+            -J RH_HAA 0.0
+            -J RH_HFE -1.18
+            -J RH_KFE 2.12">
+  </node>
 </launch>

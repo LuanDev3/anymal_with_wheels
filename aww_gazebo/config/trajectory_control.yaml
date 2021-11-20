@@ -12,16 +12,16 @@ aww:
       - LF_HFE
       - LF_KFE
     gains:
-      LF_HAA: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      LF_HFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      LF_KFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
+      LF_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LF_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      LF_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
 
     constraints:
-      goal_time: &goal_time_constraint 4.5
-      stopped_velocity_tolerance: 1.0
+      goal_time: &goal_time_constraint 8
+      stopped_velocity_tolerance: 10
       LF_HAA:
-        goal: &goal_pos_constraint 0.5
-        trajectory: &trajectory_pos_constraint 1.0
+        goal: &goal_pos_constraint 5
+        trajectory: &trajectory_pos_constraint 10
       LF_HFE:
         goal: *goal_pos_constraint
         trajectory: *trajectory_pos_constraint
@@ -37,13 +37,12 @@ aww:
       - RF_HFE
       - RF_KFE
     gains:
-      RF_HAA: {p: 1000.0, i: 0.5, d: 0.1, i_clamp: 0.0}
-      RF_HFE: {p: 1000.0, i: 0.5, d: 0.1, i_clamp: 0.0}
-      RF_KFE: {p: 1000.0, i: 0.5, d: 0.1, i_clamp: 0.0}
-
+      RF_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RF_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      RF_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
     constraints:
       goal_time: *goal_time_constraint
-      stopped_velocity_tolerance: 1.0
+      stopped_velocity_tolerance: 10
       RF_HAA:
         goal: *goal_pos_constraint
         trajectory: *trajectory_pos_constraint
@@ -62,13 +61,13 @@ aww:
       - LH_HFE
       - LH_KFE
     gains:
-      LH_HAA: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      LH_HFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      LH_KFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
+      LH_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LH_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      LH_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
 
     constraints:
       goal_time: *goal_time_constraint
-      stopped_velocity_tolerance: 1.0
+      stopped_velocity_tolerance: 10
       LH_HAA:
         goal: *goal_pos_constraint
         trajectory: *trajectory_pos_constraint
@@ -87,13 +86,13 @@ aww:
       - RH_HFE
       - RH_KFE
     gains:
-      RH_HAA: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      RH_HFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
-      RH_KFE: {p: 1000.0, i: 0.0, d: 0.1, i_clamp: 0.0}
+      RH_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RH_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      RH_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
 
     constraints:
       goal_time: *goal_time_constraint
-      stopped_velocity_tolerance: 1.0
+      stopped_velocity_tolerance: 10
       RH_HAA:
         goal: *goal_pos_constraint
         trajectory: *trajectory_pos_constraint

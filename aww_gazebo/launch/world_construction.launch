@@ -7,7 +7,7 @@
     <arg name="z" default="0.2"/>
     <arg name="yaw" default="0.0" />
 
-    <arg name="use_sim_time" default="false" />
+    <arg name="use_sim_time" default="true" />
     <arg name="gui" default="true" />
     <arg name="headless" default="false" />
     <arg name="world_name" default="$(find cpr_office_gazebo)/worlds/actually_empty_world.world" />

@@ -37,7 +37,6 @@ controller_list:
       - LF_HAA
       - LF_HFE
       - LF_KFE
-      - LF_wheel
   - name: /aww/front_right_leg_controller
     action_ns: follow_joint_trajectory
     default: True
@@ -46,7 +45,6 @@ controller_list:
       - RF_HAA
       - RF_HFE
       - RF_KFE
-      - RF_wheel
   - name: /aww/rear_left_leg_controller
     action_ns: follow_joint_trajectory
     default: True
@@ -55,7 +53,6 @@ controller_list:
       - LH_HAA
       - LH_HFE
       - LH_KFE
-      - LH_wheel
   - name: /aww/rear_right_leg_controller
     action_ns: follow_joint_trajectory
     default: True
@@ -64,14 +61,3 @@ controller_list:
       - RH_HAA
       - RH_HFE
       - RH_KFE
-      - RH_wheel
-
-initial:  # Define initial robot poses.
-- group: front_left_leg
-  pose: FL_home
-- group: front_right_leg
-  pose: FR_home
-- group: rear_left_leg
-  pose: RL_home
-- group: rear_right_leg
-  pose: RR_home
