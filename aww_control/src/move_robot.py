@@ -14,6 +14,8 @@ from math import pi
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
+from utils import aww_ik
+
 
 WHEELED = "wheeled"
 LEGGED  = "legged"
@@ -110,6 +112,7 @@ class MoveGroupInteface(object):
         self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
         self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
         self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
+        print type(self.frontLeftMoveGroup.get_current_pose().pose)
 
         rospy.logdebug(" -- Setting robot publishers")
         self.frontLeftTrajectoryPublishers  = rospy.Publisher('/move_group/front_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
