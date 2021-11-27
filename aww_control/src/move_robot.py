@@ -161,7 +161,7 @@ class MoveGroupInteface(object):
             rospy.logwarn("The joints weren't moved to te position with a error less than %s" % (resolution))
 
 
-    def planCartesianPath(self, moveGroup, type, hDisplacement = 0.3, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
+    def planCartesianPath(self, moveGroup, type, hDisplacement = 0.3, vDisplacement = 0.1, numberOfPoints = 20, scale=1):
         def createParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
             x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
             gain = -vDisplacement/((hDisplacement/2)**2)
@@ -184,12 +184,12 @@ class MoveGroupInteface(object):
             'INV-LINEAR': createInverseLinearPath
         }
 
+
         rospy.loginfo("Creating plan for %s leg!" % findNameForMovegroup(moveGroup))
         moveGroup = getattr(self, moveGroup)
         rospy.logdebug(" -- Creating trajectory...")
         xValues, zValues = createPath[type](hDisplacement, vDisplacement, numberOfPoints)
         wpose = moveGroup.get_current_pose().pose
-        #state = self.robot.get_current_state()
         xInitial = wpose.position.x
         zInitial = wpose.position.z
 
@@ -200,10 +200,7 @@ class MoveGroupInteface(object):
             waypoints.append(copy.deepcopy(wpose))
 
         rospy.logdebug(" -- Computing path...")
-        #moveGroup.set_start_state(state);
-        print waypoints
-        (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 1000)
-        print plan, fraction
+        (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 0, avoid_collisions=False)
         return plan, fraction
 
     def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
@@ -250,21 +247,20 @@ class MoveGroupInteface(object):
 
     def controlManager(self):
         if not(self.lastMode == self.mode):
-            plan, _ = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC')
-            self.executePlan(plan, "frontRightMoveGroup")
             rospy.loginfo(formatString("Mode changed to: %s") %self.mode.getMode())
             self.lastMode.wheeled = self.mode.wheeled
             self.lastMode.legged  = self.mode.legged
             if self.mode.wheeled:
                 self.goToPosition(HOME_POSITION)
+                pass
             else:
                 self.goToPosition(WALK_POSITION)
                 plan, _ = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
                 self.executePlan(plan, "frontRightMoveGroup")
                 plan, _ = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', hDisplacement=0.2)
                 self.executePlan(plan, "rearRightMoveGroup")
-                time.sleep(10)
-                plan, _ = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC', hDisplacement=0.2)
+                time.sleep(2)
+                plan, _ = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
                 self.executePlan(plan, "frontRightMoveGroup")
                 #plan, _ = self.planCartesianPath("rearRightMoveGroup", 'PARABOLIC')
                 #self.executePlan(plan, "rearRightMoveGroup")
