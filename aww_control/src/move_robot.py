@@ -103,8 +103,15 @@ class MoveGroupInteface(object):
 
         rospy.logdebug(" -- Getting robot comamder")
         self.robot = moveit_commander.RobotCommander("aww/robot_description")
+        a = self.robot.get_link("LF_thigh_fixed")
+        b = self.robot.get_link("LF_LEG")
+        print a.pose()
+        print b.pose()
         rospy.logdebug(" -- Getting robot scene")
         self.scene = moveit_commander.PlanningSceneInterface()
+
+        rospy.logdebug("-- Starting aww inverse kinematic leg resolver")
+        self.awwLegIkResolver = aww_ik.AwwLegIKResolver()
 
         rospy.logdebug(" -- Getting robot move groups")
         self.frontLeftMoveGroup  = moveit_commander.MoveGroupCommander("front_left_leg", "aww/robot_description")
@@ -112,7 +119,6 @@ class MoveGroupInteface(object):
         self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
         self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
         self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
-        print type(self.frontLeftMoveGroup.get_current_pose().pose)
 
         rospy.logdebug(" -- Setting robot publishers")
         self.frontLeftTrajectoryPublishers  = rospy.Publisher('/move_group/front_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
@@ -204,6 +210,8 @@ class MoveGroupInteface(object):
 
         rospy.logdebug(" -- Computing path...")
         (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 0, avoid_collisions=False)
+        test = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, 3)
+        print test
         return plan, fraction
 
     def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
