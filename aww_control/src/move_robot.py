@@ -36,6 +36,13 @@ WALK_POSITION = {
                0.0, -0.7,  1.2, 0.0] #rear_right
 }
 
+moveGroupPrefixes = {
+    "frontLeftMoveGroup" : "LF",
+    "frontRightMoveGroup" : "RF",
+    "rearLeftMoveGroup" :  "LH",
+    "rearRightMoveGroup" : "RH"
+}
+
 class Mode:
 
     def __init__(self, wheeled, legged):
@@ -103,10 +110,6 @@ class MoveGroupInteface(object):
 
         rospy.logdebug(" -- Getting robot comamder")
         self.robot = moveit_commander.RobotCommander("aww/robot_description")
-        a = self.robot.get_link("LF_thigh_fixed")
-        b = self.robot.get_link("LF_LEG")
-        print a.pose()
-        print b.pose()
         rospy.logdebug(" -- Getting robot scene")
         self.scene = moveit_commander.PlanningSceneInterface()
 
@@ -152,6 +155,16 @@ class MoveGroupInteface(object):
         self.mode.legged = not(self.mode.wheeled)
 
 
+    def normalizeTranslationEEPose(self, pose, refFrame):
+        refLink = self.robot.get_link(refFrame)
+        print 'iuhullllllllllllll'
+        print pose.position.x, pose.position.z
+        print refLink.pose().pose.position.x, refLink.pose().pose.position.z
+        x = pose.position.x - refLink.pose().pose.position.x
+        z = pose.position.z - refLink.pose().pose.position.z
+        return x, z
+
+
     def goToPosition(self, pose):
         rospy.loginfo("Sending robot to %s position..." % pose.get("name"))
         allLegsJointGoal = pose.get("points")
@@ -193,12 +206,15 @@ class MoveGroupInteface(object):
             'INV-LINEAR': createInverseLinearPath
         }
 
-
         rospy.loginfo("Creating plan for %s leg!" % findNameForMovegroup(moveGroup))
+        prefix = moveGroupPrefixes[moveGroup]
         moveGroup = getattr(self, moveGroup)
         rospy.logdebug(" -- Creating trajectory...")
         xValues, zValues = createPath[type](hDisplacement, vDisplacement, numberOfPoints)
         wpose = moveGroup.get_current_pose().pose
+        normPose = self.normalizeTranslationEEPose(wpose, "$_thigh_fixed".replace("$", prefix))
+        wpose.position.x = normPose[0]
+        wpose.position.z = normPose[1]
         xInitial = wpose.position.x
         zInitial = wpose.position.z
 
@@ -209,10 +225,13 @@ class MoveGroupInteface(object):
             waypoints.append(copy.deepcopy(wpose))
 
         rospy.logdebug(" -- Computing path...")
-        (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 0, avoid_collisions=False)
-        test = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, 3)
+        # (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 0, avoid_collisions=False)
+        static_joints = [self.robot.get_joint("$_HAA".replace("$", prefix)).value(), 
+                         self.robot.get_joint("$_wheel".replace("$", prefix)).value()]
+        test = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 3)
         print test
-        return plan, fraction
+        # return plan, fraction
+        return test, None
 
     def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
         rospy.loginfo("Moving base forward!")
@@ -266,13 +285,13 @@ class MoveGroupInteface(object):
                 pass
             else:
                 self.goToPosition(WALK_POSITION)
-                plan, _ = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
-                self.executePlan(plan, "frontRightMoveGroup")
-                plan, _ = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', hDisplacement=0.2)
-                self.executePlan(plan, "rearRightMoveGroup")
+                plan, _ = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
+                self.executePlan(plan, "frontLeftMoveGroup")
+                plan, _ = self.planCartesianPath("rearLeftMoveGroup", 'LINEAR', hDisplacement=0.2)
+                self.executePlan(plan, "rearLeftMoveGroup")
                 time.sleep(2)
-                plan, _ = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
-                self.executePlan(plan, "frontRightMoveGroup")
+                plan, _ = self.planCartesianPath("frontLeftMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
+                self.executePlan(plan, "frontLeftMoveGroup")
                 #plan, _ = self.planCartesianPath("rearRightMoveGroup", 'PARABOLIC')
                 #self.executePlan(plan, "rearRightMoveGroup")
 
