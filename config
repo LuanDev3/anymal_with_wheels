@@ -1,0 +1,109 @@
+[global_config]
+[keybindings]
+[layouts]
+  [[default]]
+    [[[child0]]]
+      fullscreen = False
+      last_active_term = ac79d5db-6697-470e-a55b-ab42235adba6
+      last_active_window = True
+      maximised = False
+      order = 0
+      parent = ""
+      position = 427:193
+      size = 734, 451
+      title = anymal_with_wheels
+      type = Window
+    [[[terminal1]]]
+      order = 0
+      parent = child0
+      profile = default
+      type = Terminal
+      uuid = ac79d5db-6697-470e-a55b-ab42235adba6
+  [[PFC]]
+    [[[child0]]]
+      fullscreen = False
+      last_active_term = 794b49da-dbf3-4985-8f26-f6a38ce79da2
+      last_active_window = True
+      maximised = True
+      order = 0
+      parent = ""
+      position = 67:27
+      size = 1853, 960
+      title = anymal_with_wheels
+      type = Window
+    [[[child1]]]
+      order = 0
+      parent = child0
+      position = 908
+      ratio = 0.491341991342
+      type = HPaned
+    [[[child2]]]
+      order = 0
+      parent = child1
+      position = 640
+      ratio = 0.670157068063
+      type = VPaned
+    [[[child3]]]
+      order = 0
+      parent = child2
+      position = 315
+      ratio = 0.496062992126
+      type = VPaned
+    [[[child7]]]
+      order = 1
+      parent = child1
+      position = 640
+      ratio = 0.670157068063
+      type = VPaned
+    [[[child8]]]
+      order = 0
+      parent = child7
+      position = 315
+      ratio = 0.496062992126
+      type = VPaned
+    [[[terminal1]]]
+      command = 'roslaunch aww_control wheels_teleop.launch; bash'
+      order = 1
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = aedcc745-cb43-4bd0-952b-8edeccb774df
+    [[[terminal2]]]
+      command = 'rosrun aww_utils mode_manager; bash'
+      order = 1
+      parent = child7
+      profile = default
+      type = Terminal
+      uuid = e59ed4e0-4996-4abe-ab8b-7e2bae0933de
+    [[[terminal3]]]
+      command = 'roslaunch aww_gazebo world_construction.launch; bash'
+      order = 0
+      parent = child3
+      profile = default
+      type = Terminal
+      uuid = ac79d5db-6697-470e-a55b-ab42235adba6
+    [[[terminal4]]]
+      command = 'sleep 2; roslaunch aww_moveit move_group.launch; bash'
+      order = 1
+      parent = child3
+      profile = default
+      type = Terminal
+      uuid = 794b49da-dbf3-4985-8f26-f6a38ce79da2
+    [[[terminal5]]]
+      command = 'roslaunch aww_gazebo aww_start_controllers.launch; bash'
+      order = 1
+      parent = child2
+      profile = default
+      type = Terminal
+      uuid = 4c86ec44-2e1d-491b-9d52-17dc97637451
+    [[[terminal6]]]
+      command = 'rosrun aww_control aww_legs_teleop.py; bash'
+      order = 0
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = f5a70861-a017-460c-9558-7b11482cab8e
+[plugins]
+[profiles]
+  [[default]]
+    cursor_color = "#aaaaaa"

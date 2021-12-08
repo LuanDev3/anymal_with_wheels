@@ -14,7 +14,7 @@
     <remap from="joy" to="$(arg joy_topic)" />
   </node>
 
-  <node pkg="aww_control" name="aww_teleop" type="aww_teleop.py">
+  <node pkg="aww_control" name="aww_wheels_teleop" type="aww_wheels_teleop.py" output="screen">
     <remap from="aww/cmd_vel" to="$(arg cmd_vel_topic)" />
   </node>
 

@@ -1,40 +1,17 @@
 #!/usr/bin/env python
-
-import sys
 import copy
-import math
 import rospy
 import numpy
 import moveit_commander
 import moveit_msgs.msg
-import geometry_msgs.msg
-import threading
 import time
-from math import pi
 from std_msgs.msg import String
-from moveit_commander.conversions import pose_to_list
 
-from utils import aww_ik
+from utils import aww_ik, aww_change_posture
 
 
 WHEELED = "wheeled"
 LEGGED  = "legged"
-
-HOME_POSITION = {
-    "name": "home",
-    "points": [0.0,  1.18, -2.12, 0.0, #front_left
-               0.0, -1.18,  2.12, 0.0, #rear_left
-               0.0,  1.18, -2.12, 0.0, #front_right
-               0.0, -1.18,  2.12, 0.0] #rear_right
-}
-
-WALK_POSITION = {
-    "name": "walk",
-    "points": [0.0,  0.7, -1.2, 0.0, #front_left
-               0.0, -0.7,  1.2, 0.0, #rear_left
-               0.0,  0.7, -1.2, 0.0, #front_right
-               0.0, -0.7,  1.2, 0.0] #rear_right
-}
 
 moveGroupPrefixes = {
     "frontLeftMoveGroup" : "LF",
@@ -42,6 +19,10 @@ moveGroupPrefixes = {
     "rearLeftMoveGroup" :  "LH",
     "rearRightMoveGroup" : "RH"
 }
+
+itsCloseEnough = aww_change_posture.itsCloseEnough
+removeWheelsForArray = aww_change_posture.removeWheelsForArray
+
 
 class Mode:
 
@@ -66,33 +47,6 @@ class Color:
 def formatString(initialString, color=Color.YELLOW):
     return color + initialString + Color.END
 
-
-def itsCloseEnough(goal, actual, tolerance):
-  """ Method imported from move_group.py provided by Moveit!.
-    # Copyright (c) 2013, SRI International
-    # All rights reserved.
-    # Author: Acorn Pooley, Mike Lautman
-  """
-  all_equal = True
-  if type(goal) is list:
-    for index in range(len(goal)):
-      if abs(actual[index] - goal[index]) > tolerance:
-        return False
-
-  elif type(goal) is geometry_msgs.msg.PoseStamped:
-    return all_close(goal.pose, actual.pose, tolerance)
-
-  elif type(goal) is geometry_msgs.msg.Pose:
-    return all_close(pose_to_list(goal), pose_to_list(actual), tolerance)
-
-  return True
-
-
-def removeWheelsForArray(array, indexes=[15, 11, 7, 3]):
-    newArray = array[:]
-    for index in indexes:
-        newArray.pop(index)
-    return newArray
 
 def findNameForMovegroup(moveGroupName):
     legName = moveGroupName.replace("MoveGroup", "")
@@ -122,6 +76,7 @@ class MoveGroupInteface(object):
         self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
         self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
         self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
+        self.awwChangePosture    = aww_change_posture.AwwChangePosture(self.allLegsMoveGroup)
 
         rospy.logdebug(" -- Setting robot publishers")
         self.frontLeftTrajectoryPublishers  = rospy.Publisher('/move_group/front_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
@@ -157,30 +112,11 @@ class MoveGroupInteface(object):
 
     def normalizeTranslationEEPose(self, pose, refFrame):
         refLink = self.robot.get_link(refFrame)
-        print 'iuhullllllllllllll'
         print pose.position.x, pose.position.z
         print refLink.pose().pose.position.x, refLink.pose().pose.position.z
         x = pose.position.x - refLink.pose().pose.position.x
         z = pose.position.z - refLink.pose().pose.position.z
         return x, z
-
-
-    def goToPosition(self, pose):
-        rospy.loginfo("Sending robot to %s position..." % pose.get("name"))
-        allLegsJointGoal = pose.get("points")
-
-        rospy.logdebug(" -- Sending Go action and waiting ...")
-        self.allLegsMoveGroup.go(allLegsJointGoal, wait=True)
-        rospy.logdebug(" -- Go action finished, stop for warranty")
-        self.allLegsMoveGroup.stop()
-
-        rospy.logdebug(" -- Verifying if the joints are close enough to the desired")
-        currentJoints = self.allLegsMoveGroup.get_current_joint_values()  
-        resolution = 0.05
-        if itsCloseEnough(removeWheelsForArray(allLegsJointGoal), removeWheelsForArray(currentJoints), resolution):
-            rospy.loginfo("The joints were moved to te position with a error less than %s" % (resolution))
-        else:
-            rospy.logwarn("The joints weren't moved to te position with a error less than %s" % (resolution))
 
 
     def planCartesianPath(self, moveGroup, type, hDisplacement = 0.3, vDisplacement = 0.1, numberOfPoints = 20, scale=1):
@@ -274,17 +210,13 @@ class MoveGroupInteface(object):
         rospy.loginfo("Plan executed!")
 
 
-
     def controlManager(self):
         if not(self.lastMode == self.mode):
             rospy.loginfo(formatString("Mode changed to: %s") %self.mode.getMode())
             self.lastMode.wheeled = self.mode.wheeled
             self.lastMode.legged  = self.mode.legged
-            if self.mode.wheeled:
-                self.goToPosition(HOME_POSITION)
-                pass
-            else:
-                self.goToPosition(WALK_POSITION)
+            if self.mode.legged:
+                self.awwChangePosture.goToPosition(aww_change_posture.WALK_POSITION)
                 plan, _ = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
                 self.executePlan(plan, "frontLeftMoveGroup")
                 plan, _ = self.planCartesianPath("rearLeftMoveGroup", 'LINEAR', hDisplacement=0.2)
@@ -296,17 +228,20 @@ class MoveGroupInteface(object):
                 #self.executePlan(plan, "rearRightMoveGroup")
 
 def main():
-  try:
-    interface = MoveGroupInteface()
-    interface.goToPosition(HOME_POSITION)
-    rate = rospy.Rate(10) # 10hz
-    while not rospy.is_shutdown():
-        interface.controlManager()
-        rate.sleep()
-  except rospy.ROSInterruptException:
-    return
-  except KeyboardInterrupt:
-    return
+
+    raw_input(formatString("[LEG] Welcome to aww leg control and teleop node! Press Enter to start node:"))
+  
+    try:
+        interface = MoveGroupInteface()
+        interface.awwChangePosture.goToPosition(aww_change_posture.HOME_POSITION)
+        rate = rospy.Rate(10) # 10hz
+        while not rospy.is_shutdown():
+            interface.controlManager()
+            rate.sleep()
+    except rospy.ROSInterruptException:
+        return
+    except KeyboardInterrupt:
+        return
 
 if __name__ == '__main__':
   main()

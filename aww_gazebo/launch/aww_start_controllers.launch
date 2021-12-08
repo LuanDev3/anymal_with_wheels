@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+    <!-- ros_control position control dof aww launch file -->
+    <include file="$(find aww_gazebo)/launch/aww_gazebo_position.launch" />
+
+    <!-- gazebo_diff_control for the wheels launch file -->
+    <include file="$(find aww_gazebo)/launch/aww_gazebo_velocities.launch" />
+
+    <!-- trajectory control for individual legs of aww -->
+    <include file="$(find aww_gazebo)/launch/aww_gazebo_trajectory.launch" /> 
+    <!-- include file="$(find aww_moveit)/launch/ros_controllers.launch" /--> 
+
+</launch>

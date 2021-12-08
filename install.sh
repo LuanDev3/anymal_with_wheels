@@ -32,6 +32,9 @@ rosstack profile && rospack profile
 echo "${GREEN}Installing Rosdep: ${RESET}"
 sudo apt-get install python-rosdep
 
+echo "${GREEN}Installing Terminator: ${RESET}"
+sudo apt-get install terminator
+
 echo "${GREEN}Installig ${DIR_SELF} dependencies :${RESET}"
 rosdep install --from-paths src/"${DIR_SELF}" --ignore-src -r -y
 echo "${GREEN}Installig ${DIR_ANYMAL} dependencies :${RESET}"

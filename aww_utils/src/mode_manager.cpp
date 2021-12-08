@@ -28,8 +28,9 @@ class ModeManager{
     ros::Publisher *pub_mode;
     char* actual_mode = "wheeled";
     bool points_in_cloud;
-    bool joy_obstacle_control_disable;
-    bool joy_legged_active;
+    bool joy_obstacle_control_disable = true;
+    bool joy_legged_active = false;
+    bool last_joy_obstacle_control_disable = true;
 
   public:
     void cloudCallback (const sensor_msgs::PointCloud2ConstPtr& input){
@@ -127,7 +128,15 @@ class ModeManager{
     void joyCallback (const sensor_msgs::Joy::ConstPtr& msg) {
       joy_obstacle_control_disable = (msg->buttons[OBSTACLE_CONTROL_BUTTON] > 0) ? true : false;
       joy_legged_active = (msg->buttons[LEGGED_ACTIVATE_BUTTON] > 0) ? true : false;
-      ROS_INFO("xxxxxxxxxx %i %i", joy_obstacle_control_disable, joy_legged_active);
+      if ((joy_obstacle_control_disable != last_joy_obstacle_control_disable) && (joy_obstacle_control_disable != true)) {
+        ROS_INFO(" ---- Activating obstacle control mode! ----");
+        last_joy_obstacle_control_disable = joy_obstacle_control_disable;
+      }
+      if ((joy_obstacle_control_disable != last_joy_obstacle_control_disable) && (joy_obstacle_control_disable == true)) {
+        ROS_INFO(" ---- Activating direct control mode! ----");
+        last_joy_obstacle_control_disable = joy_obstacle_control_disable;
+      }
+      //ROS_INFO("xxxxxxxxxx %i %i", joy_obstacle_control_disable, joy_legged_active);
     }
 
     void setPublishers(ros::Publisher *pub_pc, ros::Publisher *pub_mode){
@@ -143,7 +152,7 @@ class ModeManager{
       else {
         msg.data = (joy_legged_active == false) ? WHEELED_MODE : LEGGED_MODE;
       }
-      ROS_INFO("yyyyyyyyyyyyyyyy %s %s", actual_mode, msg.data.c_str());
+      //ROS_INFO("yyyyyyyyyyyyyyyy %s %s", actual_mode, msg.data.c_str());
       if (actual_mode != msg.data.c_str()) {
         actual_mode = (char*)msg.data.c_str();
         ROS_INFO("Setting robot mode to: %s", msg.data.c_str());
@@ -169,12 +178,14 @@ int main (int argc, char** argv)
   ros::Publisher pub_mode = nh.advertise<std_msgs::String> ("/aww/mode", 1);
 
 
-  if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) ) {
+  if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info) ) {
     ros::console::notifyLoggerLevelsChanged();
   }
 
   // Set publisher
   mm.setPublishers(&pub_pc, &pub_mode);
+
+  ROS_INFO("Starting mode manager node!");
 
   while (ros::ok()){
     mm.publishMode();

@@ -2,9 +2,9 @@
     <param name="office_geom" command="$(find xacro)/xacro --inorder '$(find cpr_office_gazebo)/urdf/office_construction_geometry.urdf.xacro'" />
 
     <arg name="platform" default="$(optenv CPR_GAZEBO_PLATFORM aww)" />
-    <arg name="x" default="0.0"/>
-    <arg name="y" default="0.0"/>
-    <arg name="z" default="0.2"/>
+    <arg name="x" default="8"/>
+    <arg name="y" default="-8"/>
+    <arg name="z" default="0.35"/>
     <arg name="yaw" default="0.0" />
 
     <arg name="use_sim_time" default="true" />
