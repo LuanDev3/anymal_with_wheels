@@ -17,6 +17,8 @@ def replace():
 
 def run():
 	subprocess.call('killall -9 roscore &', shell = True) # start roscore
+	time.sleep(1)
+	subprocess.call('roscore &', shell = True) # start roscore
 	time.sleep(3)
 	subprocess.call('terminator -l PFC &', shell = True) # return the config file to normal
 

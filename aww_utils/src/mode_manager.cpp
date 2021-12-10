@@ -17,7 +17,7 @@
 
 #define MAX_POINTS 5
 #define OBSTACLE_CONTROL_BUTTON 5
-#define LEGGED_ACTIVATE_BUTTON 6
+#define LEGGED_ACTIVATE_BUTTON 7
 #define WHEELED_MODE "wheeled"
 #define LEGGED_MODE "legged"
 
@@ -26,11 +26,12 @@ class ModeManager{
   private:
     ros::Publisher *pub_pc;
     ros::Publisher *pub_mode;
-    char* actual_mode = "wheeled";
+    std::string actual_mode = "wheeled";
     bool points_in_cloud;
     bool joy_obstacle_control_disable = true;
     bool joy_legged_active = false;
-    bool last_joy_obstacle_control_disable = true;
+    int last_obstacle_control_button = 0;
+    int last_legged_activate_button = 0;
 
   public:
     void cloudCallback (const sensor_msgs::PointCloud2ConstPtr& input){
@@ -126,17 +127,18 @@ class ModeManager{
     }
 
     void joyCallback (const sensor_msgs::Joy::ConstPtr& msg) {
-      joy_obstacle_control_disable = (msg->buttons[OBSTACLE_CONTROL_BUTTON] > 0) ? true : false;
-      joy_legged_active = (msg->buttons[LEGGED_ACTIVATE_BUTTON] > 0) ? true : false;
-      if ((joy_obstacle_control_disable != last_joy_obstacle_control_disable) && (joy_obstacle_control_disable != true)) {
-        ROS_INFO(" ---- Activating obstacle control mode! ----");
-        last_joy_obstacle_control_disable = joy_obstacle_control_disable;
+      if ((msg->buttons[OBSTACLE_CONTROL_BUTTON] > 0) && (last_obstacle_control_button == 0)) {
+        joy_obstacle_control_disable = !joy_obstacle_control_disable;
+        if (joy_obstacle_control_disable != true)
+          ROS_INFO(" ---- Activating obstacle control mode! ----");
+        else 
+          ROS_INFO(" ---- Activating direct control mode! ----");
       }
-      if ((joy_obstacle_control_disable != last_joy_obstacle_control_disable) && (joy_obstacle_control_disable == true)) {
-        ROS_INFO(" ---- Activating direct control mode! ----");
-        last_joy_obstacle_control_disable = joy_obstacle_control_disable;
+      if ((msg->buttons[LEGGED_ACTIVATE_BUTTON] > 0) && (last_legged_activate_button == 0)){
+        joy_legged_active = !joy_legged_active;
       }
-      //ROS_INFO("xxxxxxxxxx %i %i", joy_obstacle_control_disable, joy_legged_active);
+      last_obstacle_control_button = msg->buttons[OBSTACLE_CONTROL_BUTTON];
+      last_legged_activate_button = msg->buttons[LEGGED_ACTIVATE_BUTTON];
     }
 
     void setPublishers(ros::Publisher *pub_pc, ros::Publisher *pub_mode){
@@ -153,11 +155,11 @@ class ModeManager{
         msg.data = (joy_legged_active == false) ? WHEELED_MODE : LEGGED_MODE;
       }
       //ROS_INFO("yyyyyyyyyyyyyyyy %s %s", actual_mode, msg.data.c_str());
-      if (actual_mode != msg.data.c_str()) {
-        actual_mode = (char*)msg.data.c_str();
+      if (actual_mode != msg.data) {
+        actual_mode = msg.data;
         ROS_INFO("Setting robot mode to: %s", msg.data.c_str());
+        this->pub_mode->publish(msg);
       }
-      this->pub_mode->publish(msg);
     }
 };
 
