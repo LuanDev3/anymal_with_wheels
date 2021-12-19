@@ -27,7 +27,7 @@ class AwwTeleop():
         rospy.loginfo("AWW teleop initialized!")
         rospack = rospkg.RosPack()
         self.path = rospack.get_path('aww_control')
-        self.allow_control = False
+        self.allow_control = True
         self.joy_mapper = rospy.get_param('~joy_config', self.path + '/config/joy_mapper.yaml')
         self.awwChangePosture = aww_change_posture.AwwChangePosture()
 

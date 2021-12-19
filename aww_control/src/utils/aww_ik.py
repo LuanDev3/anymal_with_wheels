@@ -12,16 +12,16 @@ LEG_LENGTH = 0.33797
 VIRTUAL_LEG_LENGTH = math.sqrt(LEG_LENGTH**2 + KNEE_OFFSET**2)
 PSI = math.atan(KNEE_OFFSET/LEG_LENGTH)
 
-DOG_MODE = 'DOG_MODE'
-HORSE_MODE = 'HORSE_MODE'
+INTERNAL_ELBOW = 'INTERNAL_ELBOW'
+INTERNAL_KNEE = 'INTERNAL_KNEE'
 
 class ImpossibleTrajectory(Exception):
 	def __init__(self, msg='The proposed trajectory is impossible to achieve!'):
 		super(ImpossibleTrajectory, self).__init__(msg)
 
 class AwwLegIKResolver:
-	def __init__(self, solution=DOG_MODE):
-		self.solution = solution if solution in (DOG_MODE, HORSE_MODE) else DOG_MODE
+	def __init__(self, solution=INTERNAL_ELBOW):
+		self.solution = solution if solution in (INTERNAL_ELBOW, INTERNAL_KNEE) else INTERNAL_ELBOW
 
 	def calculatePathInJointSpace(self, path_in_cartesian_space, static_joints, prefix, time_to_complete_trajectory):
 		robot_trajectory = RobotTrajectory()
@@ -35,6 +35,7 @@ class AwwLegIKResolver:
 			p_x, p_z = point.position.x, point.position.z
 			phi, eta = self.getPhi(p_x, p_z)
 			theta = self.getTheta(p_x, p_z, eta)
+			print phi, theta
 			final_point.positions = [static_joints[0], theta, phi, static_joints[1]]
 			final_point.velocities = []
 			final_point.accelerations = []
@@ -43,7 +44,7 @@ class AwwLegIKResolver:
 			joint_trajectory.points.append(final_point)
 
 		rospy.loginfo("Path created with %s points!" % len(joint_trajectory.points))
-		joint_trajectory.joint_names = [joint.replace('$', prefix) for joint in ["$_HAA", "$_HFE", "$_KFE", "$_wheel"]]
+		joint_trajectory.joint_names = [joint.replace('$', prefix) for joint in ["$_HAA", "$_HFE", "$_KFE"]]
 		joint_trajectory.header.frame_id = "base"
 		robot_trajectory.joint_trajectory = joint_trajectory
 		return robot_trajectory
@@ -57,14 +58,14 @@ class AwwLegIKResolver:
 		eta_2 = math.atan2(-math.sqrt(1 - cos_eta**2), cos_eta)
 		phi_1 = eta_1 - PSI if eta_1 > 0 else eta_1 + PSI
 		phi_2 = eta_2 - PSI if eta_2 > 0 else eta_2 + PSI
-		if self.solution == DOG_MODE:
+		if self.solution == INTERNAL_ELBOW:
 			return min(phi_1, phi_2), min(eta_1, eta_2)
 		else:
-			return max(phi_1, phi_2), min(eta_1, eta_2)
+			return max(phi_1, phi_2), max(eta_1, eta_2)
 
 	def getTheta(self, px, pz, eta):
-		external_angle = math.atan((VIRTUAL_LEG_LENGTH*math.sin(eta))/(THIGH_LENGTH + VIRTUAL_LEG_LENGTH*math.cos(eta)))
+		external_angle = -math.atan((VIRTUAL_LEG_LENGTH*math.sin(eta))/(THIGH_LENGTH + VIRTUAL_LEG_LENGTH*math.cos(eta)))
 		internal_angle = math.atan(px/pz) if px != 0 else math.radians(90)
-		theta = external_angle - internal_angle
-		# print px, pz, external_angle, internal_angle, theta, eta
-		return -theta
+		theta = external_angle + internal_angle
+		print px, pz, external_angle, internal_angle, theta, eta
+		return theta

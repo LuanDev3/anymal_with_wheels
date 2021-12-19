@@ -2,10 +2,12 @@
 import copy
 import rospy
 import numpy
+import actionlib
 import moveit_commander
 import moveit_msgs.msg
 import time
 from std_msgs.msg import String
+from control_msgs.msg import JointTrajectoryAction, JointTrajectoryGoal, FollowJointTrajectoryAction, FollowJointTrajectoryGoal
 
 from utils import aww_ik, aww_change_posture
 
@@ -67,15 +69,25 @@ class MoveGroupInteface(object):
         rospy.logdebug(" -- Getting robot scene")
         self.scene = moveit_commander.PlanningSceneInterface()
 
-        rospy.logdebug("-- Starting aww inverse kinematic leg resolver")
+        rospy.logdebug(" -- Starting aww inverse kinematic leg resolver")
         self.awwLegIkResolver = aww_ik.AwwLegIKResolver()
 
+        rospy.logdebug(" -- Getting action clients")
+        self.frontLeftLegAction  = actionlib.SimpleActionClient('/aww/front_left_leg_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+        self.frontRightLegAction = actionlib.SimpleActionClient('/aww/front_right_leg_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+        self.rearLeftLegAction   = actionlib.SimpleActionClient('/aww/rear_left_leg_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+        self.rearRightLegAction  = actionlib.SimpleActionClient('/aww/rear_right_leg_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
+        self.frontLeftLegAction.wait_for_server()
+        self.frontRightLegAction.wait_for_server()
+        self.rearLeftLegAction.wait_for_server()
+        self.rearRightLegAction.wait_for_server()
+
         rospy.logdebug(" -- Getting robot move groups")
+        self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
         self.frontLeftMoveGroup  = moveit_commander.MoveGroupCommander("front_left_leg", "aww/robot_description")
         self.frontRightMoveGroup = moveit_commander.MoveGroupCommander("front_right_leg", "aww/robot_description")
         self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
         self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
-        self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
         self.awwChangePosture    = aww_change_posture.AwwChangePosture(self.allLegsMoveGroup)
 
         rospy.logdebug(" -- Setting robot publishers")
@@ -161,13 +173,10 @@ class MoveGroupInteface(object):
             waypoints.append(copy.deepcopy(wpose))
 
         rospy.logdebug(" -- Computing path...")
-        # (plan, fraction) = moveGroup.compute_cartesian_path(waypoints[1:], 0.001, 0, avoid_collisions=False)
         static_joints = [self.robot.get_joint("$_HAA".replace("$", prefix)).value(), 
                          self.robot.get_joint("$_wheel".replace("$", prefix)).value()]
-        test = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 3)
-        print test
-        # return plan, fraction
-        return test, None
+        path = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 3)
+        return path
 
     def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
         rospy.loginfo("Moving base forward!")
@@ -217,15 +226,31 @@ class MoveGroupInteface(object):
             self.lastMode.legged  = self.mode.legged
             if self.mode.legged:
                 self.awwChangePosture.goToPosition(aww_change_posture.WALK_POSITION)
-                plan, _ = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
-                self.executePlan(plan, "frontLeftMoveGroup")
-                plan, _ = self.planCartesianPath("rearLeftMoveGroup", 'LINEAR', hDisplacement=0.2)
-                self.executePlan(plan, "rearLeftMoveGroup")
-                time.sleep(2)
-                plan, _ = self.planCartesianPath("frontLeftMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
-                self.executePlan(plan, "frontLeftMoveGroup")
-                #plan, _ = self.planCartesianPath("rearRightMoveGroup", 'PARABOLIC')
-                #self.executePlan(plan, "rearRightMoveGroup")
+                # plan = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
+                # self.executePlan(plan, "frontRightMoveGroup")
+                # self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
+                # plan = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', hDisplacement=0.2)
+                # self.executePlan(plan, "rearRightMoveGroup")
+                # self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
+                # plan = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
+                # self.executePlan(plan, "frontRightMoveGroup")
+                plan_1 = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
+                plan_2 = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
+                self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
+                plan_3 = self.planCartesianPath("rearLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
+                plan_4 = self.planCartesianPath("rearRightMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
+                goal1 = FollowJointTrajectoryGoal()     
+                goal1.trajectory = plan_1.joint_trajectory
+                goal2 = FollowJointTrajectoryGoal()                  
+                goal2.trajectory = plan_2.joint_trajectory
+                goal3 = FollowJointTrajectoryGoal()                  
+                goal3.trajectory = plan_3.joint_trajectory
+                goal4 = FollowJointTrajectoryGoal()                  
+                goal4.trajectory = plan_4.joint_trajectory
+                self.frontLeftLegAction.send_goal(goal1)
+                self.frontRightLegAction.send_goal(goal2)
+                self.rearLeftLegAction.send_goal(goal3)
+                self.rearRightLegAction.send_goal(goal4)
 
 def main():
 
@@ -234,7 +259,7 @@ def main():
     try:
         interface = MoveGroupInteface()
         interface.awwChangePosture.goToPosition(aww_change_posture.HOME_POSITION)
-        rate = rospy.Rate(10) # 10hz
+        rate = rospy.Rate(30) # 10hz
         while not rospy.is_shutdown():
             interface.controlManager()
             rate.sleep()

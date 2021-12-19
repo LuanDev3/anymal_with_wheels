@@ -16,11 +16,22 @@ def replace():
 	subprocess.call('cp '+ file + ' ~/.config/terminator/config', shell = True)
 
 def run():
-	subprocess.call('killall -9 roscore &', shell = True) # start roscore
-	time.sleep(1)
-	subprocess.call('roscore &', shell = True) # start roscore
-	time.sleep(3)
-	subprocess.call('terminator -l PFC &', shell = True) # return the config file to normal
+	try:
+		print "Killing all ros instances..."
+		killROS = subprocess.Popen(['pkill', '-9', '-f', 'ros']) # finishing ros
+		killROS.communicate()
+		print "Starting roscore..."
+		FNULL = open(os.devnull, 'w')
+		subprocess.call('roscore &', shell = True,  stdout=FNULL, stderr=subprocess.STDOUT)
+		time.sleep(3)
+		print "Starting demo..."
+		subprocess.call('terminator -l PFC', shell = True)
+	except KeyboardInterrupt:
+		print "Finishing demo..."
+		killROS = subprocess.Popen(['pkill', '-9', '-f', 'ros'])
+		killROS.communicate()
+		killTerminator = subprocess.Popen(['pkill', '-9', '-f', 'terminator'])
+		killTerminator.communicate()
 
 def restoreConfig():
 	subprocess.call('mv ~/.config/terminator/config.bak ~/.config/terminator/config', shell = True) # return the config file to normal

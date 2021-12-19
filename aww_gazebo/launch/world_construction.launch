@@ -4,7 +4,7 @@
     <arg name="platform" default="$(optenv CPR_GAZEBO_PLATFORM aww)" />
     <arg name="x" default="8"/>
     <arg name="y" default="-8"/>
-    <arg name="z" default="0.35"/>
+    <arg name="z" default="0.3"/>
     <arg name="yaw" default="0.0" />
 
     <arg name="use_sim_time" default="true" />
