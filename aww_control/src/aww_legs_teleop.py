@@ -177,46 +177,56 @@ class MoveGroupInteface(object):
                          self.robot.get_joint("$_wheel".replace("$", prefix)).value()]
         path = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 3)
         return path
-
-    def moveBodyToFront(self, vDisplacement = 0.1, numberOfPoints = 10, scale=1):
-        rospy.loginfo("Moving base forward!")
-        rospy.logdebug(" -- Getting the actual pose for all move groups...")
-        fl_pose = self.frontLeftMoveGroup.get_current_pose().pose
-        fr_pose = self.frontRightMoveGroup.get_current_pose().pose
-        rl_pose = self.rearLeftMoveGroup.get_current_pose().pose
-        rr_pose = self.rearRightMoveGroup.get_current_pose().pose
-
-        # The path for each move group is to move backward the back and by vDisplacement
-        rospy.logdebug(" -- Calculating the linear path ...")
-        norm_factor = 10/vDisplacement
-        points = [x/norm_factor for x in range(1, int(norm_factor*vDisplacement) + 1, int(vDisplacement/10*norm_factor))]
-        fl_waypoints = list()
-        fr_waypoints = list()
-        rl_waypoints = list()
-        rr_waypoints = list()
-        for i in range(numberOfPoints):
-            fl_pose.position.x = fl_pose.position.x - points[i];
-            fr_pose.position.x = fr_pose.position.x - points[i];
-            rl_pose.position.x = rl_pose.position.x - points[i];
-            rr_pose.position.x = rr_pose.position.x - points[i];
-            fl_waypoints.append(copy.deepcopy(fl_pose))
-            fr_waypoints.append(copy.deepcopy(fr_pose))
-            rl_waypoints.append(copy.deepcopy(rl_pose))
-            rr_waypoints.append(copy.deepcopy(rr_pose))
-
-        rospy.loginfo(" -- Computing the cartesian path for the legs")
-        fl_plan, _ = self.frontLeftMoveGroup.compute_cartesian_path(fl_waypoints, 0.01, 0.0)
-        fr_plan, _ = self.frontRightMoveGroup.compute_cartesian_path(fr_waypoints, 0.01, 0.0)
-        rl_plan, _ = self.rearLeftMoveGroup.compute_cartesian_path(rl_waypoints, 0.01, 0.0)
-        rr_plan, _ = self.rearRightMoveGroup.compute_cartesian_path(rr_waypoints, 0.01, 0.0)
-        print fl_plan.joint_trajectory, type(fl_plan.joint_trajectory)
-
+        
 
     def executePlan(self, plan, moveGroup, wait=True):
         rospy.loginfo("Executing plan for %s leg!" % findNameForMovegroup(moveGroup))
         moveGroup = getattr(self, moveGroup)
         moveGroup.execute(plan, wait=wait)
         rospy.loginfo("Plan executed!")
+
+    
+    def discontinuousGateStartPosition(self, displacement = 0.2):
+        self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
+        plan = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', displacement)
+        self.executePlan(plan, "frontRightMoveGroup")
+        self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
+        plan = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', displacement)
+        self.executePlan(plan, "rearRightMoveGroup")
+
+
+    def moveBodyToFront(self, displacement = 0.2):
+        self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
+        plan_1 = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', displacement)
+        plan_2 = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', displacement)
+        self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
+        plan_3 = self.planCartesianPath("rearLeftMoveGroup", 'INV-LINEAR', displacement)
+        plan_4 = self.planCartesianPath("rearRightMoveGroup", 'INV-LINEAR', displacement)
+        goal1 = FollowJointTrajectoryGoal()     
+        goal1.trajectory = plan_1.joint_trajectory
+        goal2 = FollowJointTrajectoryGoal()                  
+        goal2.trajectory = plan_2.joint_trajectory
+        goal3 = FollowJointTrajectoryGoal()                  
+        goal3.trajectory = plan_3.joint_trajectory
+        goal4 = FollowJointTrajectoryGoal()                  
+        goal4.trajectory = plan_4.joint_trajectory
+        self.frontLeftLegAction.send_goal(goal1)
+        self.frontRightLegAction.send_goal(goal2)
+        self.rearLeftLegAction.send_goal(goal3)
+        self.rearRightLegAction.send_goal(goal4)
+        self.frontLeftLegAction.wait_for_result()
+        self.frontRightLegAction.wait_for_result()
+        self.rearLeftLegAction.wait_for_result()
+        self.rearRightLegAction.wait_for_result()
+
+
+    def moveLeg(self, group, type, displacement=(0.4, 0.1)):
+        if "front" in group:
+            self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
+        else:
+            self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
+        plan = self.planCartesianPath(group, type, hDisplacement=displacement[0], vDisplacement=displacement[1])
+        self.executePlan(plan, group)
 
 
     def controlManager(self):
@@ -226,31 +236,15 @@ class MoveGroupInteface(object):
             self.lastMode.legged  = self.mode.legged
             if self.mode.legged:
                 self.awwChangePosture.goToPosition(aww_change_posture.WALK_POSITION)
-                # plan = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.2)
-                # self.executePlan(plan, "frontRightMoveGroup")
-                # self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
-                # plan = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', hDisplacement=0.2)
-                # self.executePlan(plan, "rearRightMoveGroup")
-                # self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
-                # plan = self.planCartesianPath("frontRightMoveGroup", 'PARABOLIC', hDisplacement=0.4, vDisplacement=0.1)
-                # self.executePlan(plan, "frontRightMoveGroup")
-                plan_1 = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
-                plan_2 = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
-                self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
-                plan_3 = self.planCartesianPath("rearLeftMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
-                plan_4 = self.planCartesianPath("rearRightMoveGroup", 'INV-LINEAR', hDisplacement=0.1)
-                goal1 = FollowJointTrajectoryGoal()     
-                goal1.trajectory = plan_1.joint_trajectory
-                goal2 = FollowJointTrajectoryGoal()                  
-                goal2.trajectory = plan_2.joint_trajectory
-                goal3 = FollowJointTrajectoryGoal()                  
-                goal3.trajectory = plan_3.joint_trajectory
-                goal4 = FollowJointTrajectoryGoal()                  
-                goal4.trajectory = plan_4.joint_trajectory
-                self.frontLeftLegAction.send_goal(goal1)
-                self.frontRightLegAction.send_goal(goal2)
-                self.rearLeftLegAction.send_goal(goal3)
-                self.rearRightLegAction.send_goal(goal4)
+                self.discontinuousGateStartPosition()
+                while(1):
+                    self.moveLeg("frontRightMoveGroup", 'PARABOLIC')
+                    self.moveBodyToFront()
+                    self.moveLeg("rearLeftMoveGroup", 'PARABOLIC')
+                    self.moveLeg("frontLeftMoveGroup", 'PARABOLIC')
+                    self.moveBodyToFront()
+                    self.moveLeg("rearRightMoveGroup", 'PARABOLIC')
+
 
 def main():
 
