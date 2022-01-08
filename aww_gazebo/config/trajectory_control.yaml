@@ -12,9 +12,9 @@ aww:
       - LF_HFE
       - LF_KFE
     gains:
-      LF_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
-      LF_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
-      LF_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LF_HAA: {p: 10000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LF_HFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      LF_KFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
 
     constraints:
       goal_time: &goal_time_constraint 8
@@ -37,9 +37,9 @@ aww:
       - RF_HFE
       - RF_KFE
     gains:
-      RF_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
-      RF_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
-      RF_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RF_HAA: {p: 10000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RF_HFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      RF_KFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
     constraints:
       goal_time: *goal_time_constraint
       stopped_velocity_tolerance: 10
@@ -61,9 +61,9 @@ aww:
       - LH_HFE
       - LH_KFE
     gains:
-      LH_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
-      LH_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
-      LH_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LH_HAA: {p: 10000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      LH_HFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      LH_KFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
 
     constraints:
       goal_time: *goal_time_constraint
@@ -86,9 +86,9 @@ aww:
       - RH_HFE
       - RH_KFE
     gains:
-      RH_HAA: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
-      RH_HFE: {p: 6000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
-      RH_KFE: {p: 4000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RH_HAA: {p: 10000.0, i: 100, d: 10, i_clamp_min: -500, i_clamp_max: 500}
+      RH_HFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
+      RH_KFE: {p: 10000.0, i: 500, d: 10, i_clamp_min: -800, i_clamp_max: 800}
 
     constraints:
       goal_time: *goal_time_constraint

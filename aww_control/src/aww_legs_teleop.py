@@ -43,6 +43,7 @@ class Mode:
 
 class Color:
     YELLOW = '\033[93m'
+    BLUE = '\033[34m'
     END = '\033[0m'
 
 
@@ -124,8 +125,6 @@ class MoveGroupInteface(object):
 
     def normalizeTranslationEEPose(self, pose, refFrame):
         refLink = self.robot.get_link(refFrame)
-        print pose.position.x, pose.position.z
-        print refLink.pose().pose.position.x, refLink.pose().pose.position.z
         x = pose.position.x - refLink.pose().pose.position.x
         z = pose.position.z - refLink.pose().pose.position.z
         return x, z
@@ -175,7 +174,7 @@ class MoveGroupInteface(object):
         rospy.logdebug(" -- Computing path...")
         static_joints = [self.robot.get_joint("$_HAA".replace("$", prefix)).value(), 
                          self.robot.get_joint("$_wheel".replace("$", prefix)).value()]
-        path = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 3)
+        path = self.awwLegIkResolver.calculatePathInJointSpace(waypoints, static_joints, prefix, 1)
         return path
         
 
@@ -186,16 +185,19 @@ class MoveGroupInteface(object):
         rospy.loginfo("Plan executed!")
 
     
-    def discontinuousGateStartPosition(self, displacement = 0.2):
+    def discontinuousGateStartPosition(self, displacement = 0.25):
+        rospy.loginfo(formatString("Moving robot to initial position to start gate!", Color.BLUE))
         self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
         plan = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', displacement)
         self.executePlan(plan, "frontRightMoveGroup")
         self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
         plan = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', displacement)
         self.executePlan(plan, "rearRightMoveGroup")
+        time.sleep(0.5)
 
 
-    def moveBodyToFront(self, displacement = 0.2):
+    def moveBodyToFront(self, displacement = 0.25):
+        rospy.loginfo(formatString("Sending body to front!", Color.BLUE))
         self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
         plan_1 = self.planCartesianPath("frontLeftMoveGroup", 'INV-LINEAR', displacement)
         plan_2 = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', displacement)
@@ -218,15 +220,18 @@ class MoveGroupInteface(object):
         self.frontRightLegAction.wait_for_result()
         self.rearLeftLegAction.wait_for_result()
         self.rearRightLegAction.wait_for_result()
+        time.sleep(0.5)
 
 
-    def moveLeg(self, group, type, displacement=(0.4, 0.1)):
+    def moveLeg(self, group, type, displacement=(0.5, 0.1)):
+        rospy.loginfo(formatString("Moving leg : %s!", Color.BLUE) %findNameForMovegroup(group))
         if "front" in group:
             self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
         else:
             self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
         plan = self.planCartesianPath(group, type, hDisplacement=displacement[0], vDisplacement=displacement[1])
         self.executePlan(plan, group)
+        time.sleep(0.5)
 
 
     def controlManager(self):

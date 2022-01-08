@@ -35,7 +35,6 @@ class AwwLegIKResolver:
 			p_x, p_z = point.position.x, point.position.z
 			phi, eta = self.getPhi(p_x, p_z)
 			theta = self.getTheta(p_x, p_z, eta)
-			print phi, theta
 			final_point.positions = [static_joints[0], theta, phi, static_joints[1]]
 			final_point.velocities = []
 			final_point.accelerations = []
@@ -67,5 +66,4 @@ class AwwLegIKResolver:
 		external_angle = -math.atan((VIRTUAL_LEG_LENGTH*math.sin(eta))/(THIGH_LENGTH + VIRTUAL_LEG_LENGTH*math.cos(eta)))
 		internal_angle = math.atan(px/pz) if px != 0 else math.radians(90)
 		theta = external_angle + internal_angle
-		print px, pz, external_angle, internal_angle, theta, eta
 		return theta
