@@ -1,0 +1,33 @@
+<launch>
+
+    <arg name="frame_id" default="velodyne" />
+
+    <!-- run pointcloud_to_laserscan node -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+
+        <remap from="cloud_in" to="aww/velodyne/points"/>
+        <rosparam>
+            transform_tolerance: 0.01
+            min_height: 0.0
+            max_height: 1.0
+
+            angle_min: -3.14 # -M_PI
+            angle_max: 3.14 # M_PI
+            angle_increment: 0.0087 # M_PI/360.0
+            scan_time: 0.3333
+            range_min: 0.45
+            range_max: 10.0
+            use_inf: true
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 0
+        </rosparam>
+    </node>
+
+
+    !-- <!-- This node fix the frame_id of the scan -->
+     <node name="convert_laser_frame_id" pkg="topic_tools" type="transform" args="/scan /modified_scan sensor_msgs/LaserScan 'sensor_msgs.msg.LaserScan(header=std_msgs.msg.Header(seq=m.header.seq,stamp=m.header.stamp,frame_id=m.header.frame_id[4:]), angle_min=m.angle_min, angle_max=m.angle_max, angle_increment=m.angle_increment, time_increment=m.time_increment, scan_time=m.scan_time, range_min=m.range_min, range_max=m.range_max, ranges=m.ranges, intensities=m.intensities)' --import sensor_msgs std_msgs --wait-for-start"/> -->
+</launch>

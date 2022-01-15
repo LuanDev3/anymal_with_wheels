@@ -234,7 +234,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0.042 -0.001 0.004"/>
-      <mass value="0.73"/>
+      <mass value="12.73"/>
       <inertia ixx="0.005238611" ixy="1.7609e-05" ixz="7.2167e-05" iyy="0.002643098" iyz="1.9548e-05" izz="0.004325938"/>
     </inertial>
   </link>
@@ -539,7 +539,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0.00948 -0.00948 0.1468"/>
-      <mass value="0.25"/>
+      <mass value="0.15"/>
       <inertia ixx="0.00317174097" ixy="2.63048e-06" ixz="6.815581e-05" iyy="0.00317174092" iyz="6.815583e-05" izz="8.319196e-05"/>
     </inertial>
   </link>
@@ -784,7 +784,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0.00948 0.00948 0.1468"/>
-      <mass value="0.25"/>
+      <mass value="0.15"/>
       <inertia ixx="0.00317174097" ixy="-2.63048e-06" ixz="6.815581e-05" iyy="0.00317174092" iyz="-6.815583e-05" izz="8.319196e-05"/>
     </inertial>
   </link>
@@ -1031,7 +1031,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00948 -0.00948 0.1468"/>
-      <mass value="0.25"/>
+      <mass value="0.15"/>
       <inertia ixx="0.00317174097" ixy="-2.63048e-06" ixz="-6.815581e-05" iyy="0.00317174092" iyz="6.815583e-05" izz="8.319196e-05"/>
     </inertial>
   </link>
@@ -1276,7 +1276,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00948 0.00948 0.1468"/>
-      <mass value="0.25"/>
+      <mass value="0.15"/>
       <inertia ixx="0.00317174097" ixy="2.63048e-06" ixz="-6.815581e-05" iyy="0.00317174092" iyz="-6.815583e-05" izz="8.319196e-05"/>
     </inertial>
   </link>
@@ -1467,7 +1467,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.477"/>
+      <mass value="0.2"/>
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
@@ -1515,7 +1515,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.477"/>
+      <mass value="0.2"/>
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
@@ -1563,7 +1563,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.477"/>
+      <mass value="0.2"/>
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
@@ -1611,7 +1611,7 @@
     </collision>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.477"/>
+      <mass value="0.2"/>
       <inertia ixx="0.0013" ixy="0" ixz="0" iyy="0.0024" iyz="0" izz="0.0013"/>
     </inertial>
   </link>
@@ -1651,19 +1651,11 @@
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
       <legacyModeNS>true</legacyModeNS>
     </plugin>
-  </gazebo>
-  <gazebo>
-    <plugin filename="libhector_gazebo_ros_imu.so" name="imu_controller">
+    <plugin filename="libgazebo_ros_controller_manager.so" name="gazebo_ros_controller_manager">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>1000.0</updateRate>
+      <robotParam>robot_description</robotParam>
       <robotNamespace>/aww</robotNamespace>
-      <updateRate>50.0</updateRate>
-      <bodyName>imu_link</bodyName>
-      <topicName>imu/data</topicName>
-      <accelDrift>0.005 0.005 0.005</accelDrift>
-      <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
-      <rateDrift>0.005 0.005 0.005 </rateDrift>
-      <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
-      <headingDrift>0.005</headingDrift>
-      <headingGaussianNoise>0.005</headingGaussianNoise>
     </plugin>
   </gazebo>
   <!-- =============================================================================== -->
@@ -1758,7 +1750,7 @@
     <sensor name="velodyne-VLP16" type="ray">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
-      <update_rate>20</update_rate>
+      <update_rate>10</update_rate>
       <ray>
         <scan>
           <horizontal>

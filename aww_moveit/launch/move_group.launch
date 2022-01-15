@@ -23,7 +23,6 @@
   <arg name="jiggle_fraction" default="0.05" />
   <arg name="publish_monitored_planning_scene" default="true"/>
   <arg name="capabilities" default=""/>
-  <arg name="disable_capabilities" default=""/>
   
   <!-- load these non-default MoveGroup capabilities (space seperated) -->
   <!--
@@ -34,12 +33,15 @@
   -->
 
   <!-- inhibit these default MoveGroup capabilities (space seperated) -->
-  <!--
+
   <arg name="disable_capabilities" value="
-                move_group/MoveGroupKinematicsService
-                move_group/ClearOctomapService
-                " />
-  -->
+    move_group/MoveGroupKinematicsService 
+    move_group/ClearOctomapService 
+    move_group/MoveGroupStateValidationService 
+    move_group/MoveGroupQueryPlannersService 
+    move_group/MoveGroupCartesianPathService
+    move_group/ApplyPlanningSceneService
+    move_group/MoveGroupPlanService" />
 
   <arg name="load_robot_description" default="false" />
   <!-- load URDF, SRDF and joint_limits configuration -->
@@ -72,6 +74,7 @@
     <param name="joint_state_publisher" value="/aww/joint_state_publisher"/>
     <param name="max_safe_path_cost" value="$(arg max_safe_path_cost)"/>
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+    <param name="disable_capabilities" value="$(arg disable_capabilities)"/>
     <remap from="robot_description" to="/aww/robot_description" />
   </node>
 

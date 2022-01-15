@@ -1,18 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
 
-   <master auto="start"/>
- 	<!-- Run the map server -->
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find aww_navigation)/map/office_construction_without_obstacle.yaml"/>
+    <!-- Run the map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find aww_navigation)/map/office_construction_without_obstacles.yaml"/>
 
- 	<!--- Run AMCL -->
+ 	  <!--- Run AMCL -->
     <include file="$(find amcl)/examples/amcl_diff.launch" />
 
-   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <rosparam file="$(find aww_navigation)/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find aww_navigation)/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find aww_navigation)/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find aww_navigation)/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find aww_navigation)/base_local_planner_params.yaml" command="load" />
- </node>
+    <!--- Run Gmapping -->
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >
+	    <remap from="scan" to="scan" />
+	    <remap from="base_link" to="base" />
+	    <remap from="odom" to="odom" />
+  	</node>
+
+  	<!-- Run move base -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+      <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find aww_navigation)/config/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find aww_navigation)/config/global_costmap_params.yaml" command="load" />
+      <rosparam file="$(find aww_navigation)/config/base_local_planner_params.yaml" command="load" />
+    </node>
 
 </launch>

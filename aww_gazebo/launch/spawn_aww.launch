@@ -4,7 +4,7 @@
   <arg name="z" default="0.1" />
   <arg name="yaw" default="0" />
   <arg name="namespace" default="/aww" />
-  <arg name="node_start_delay" default="1.0" /> 
+  <arg name="node_start_delay" default="3.0" /> 
 
   <!-- Configuration of aww which you would like to simulate.
        See jackal_description for details. -->
