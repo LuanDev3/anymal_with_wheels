@@ -1,7 +1,12 @@
 obstacle_range: 2.5
 raytrace_range: 3.0
+robot_base_frame: base
 footprint: [[-0.462, 0.3], [0.462, 0.3], [0.462, -0.3], [-0.462, -0.3]]
 inflation_radius: 0.55
+
+static:
+  map_topic: /map
+  subscribe_to_updates: true
 
 observation_sources: laser_scan_sensor
 

@@ -67,8 +67,6 @@ class MoveGroupInteface(object):
 
         rospy.logdebug(" -- Getting robot comamder")
         self.robot = moveit_commander.RobotCommander("aww/robot_description")
-        rospy.logdebug(" -- Getting robot scene")
-        self.scene = moveit_commander.PlanningSceneInterface()
 
         rospy.logdebug(" -- Starting aww inverse kinematic leg resolver")
         self.awwLegIkResolver = aww_ik.AwwLegIKResolver()

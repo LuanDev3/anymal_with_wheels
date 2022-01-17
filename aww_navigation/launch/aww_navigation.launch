@@ -8,14 +8,15 @@
     <include file="$(find amcl)/examples/amcl_diff.launch" />
 
     <!--- Run Gmapping -->
-    <node pkg="gmapping" type="slam_gmapping" name="gmapping_thing" output="screen" >
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
 	    <remap from="scan" to="scan" />
-	    <remap from="base_link" to="base" />
-	    <remap from="odom" to="odom" />
+	    <param name="odom_frame" value="odom" />
+	    <param name="base_frame" value="base" />
   	</node>
 
   	<!-- Run move base -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <remap from="odom" to="aww/aww_velocity_controller/odom" />
       <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
       <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
       <rosparam file="$(find aww_navigation)/config/local_costmap_params.yaml" command="load" />

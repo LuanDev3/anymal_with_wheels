@@ -160,7 +160,7 @@
       type = Terminal
       uuid = e59ed4e0-4996-4abe-ab8b-7e2bae0933da
     [[[terminal3]]]
-      command = 'roslaunch aww_navigation pointcloud_to_laserscan.launch; bash'
+      command = 'sleep 40; roslaunch aww_navigation pointcloud_to_laserscan.launch; bash'
       order = 0
       parent = child3
       profile = default
