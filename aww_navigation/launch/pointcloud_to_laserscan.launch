@@ -1,9 +1,9 @@
 <launch>
 
-    <arg name="frame_id" default="velodyne" />
+    <node pkg="nodelet" type="nodelet" name="pointcloud_to_laserscan_manager" output="screen" respawn="true" args="manager" />
 
     <!-- run pointcloud_to_laserscan node -->
-    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+    <node pkg="nodelet" type="nodelet" name="pointcloud_to_laserscan" args="load pointcloud_to_laserscan/pointcloud_to_laserscan_nodelet pointcloud_to_laserscan_manager">
 
         <remap from="cloud_in" to="aww/velodyne/points"/>
         <rosparam>
@@ -23,11 +23,10 @@
             # 0 : Detect number of cores
             # 1 : Single threaded
             # 2->inf : Parallelism level
-            concurrency_level: 0
+            concurrency_level: 1
         </rosparam>
     </node>
 
-
-    !-- <!-- This node fix the frame_id of the scan -->
-     <node name="convert_laser_frame_id" pkg="topic_tools" type="transform" args="/scan /modified_scan sensor_msgs/LaserScan 'sensor_msgs.msg.LaserScan(header=std_msgs.msg.Header(seq=m.header.seq,stamp=m.header.stamp,frame_id=m.header.frame_id[4:]), angle_min=m.angle_min, angle_max=m.angle_max, angle_increment=m.angle_increment, time_increment=m.time_increment, scan_time=m.scan_time, range_min=m.range_min, range_max=m.range_max, ranges=m.ranges, intensities=m.intensities)' --import sensor_msgs std_msgs --wait-for-start"/> -->
+    <!-- This node fix the frame_id of the scan -->
+    <node name="convert_laser_frame_id" pkg="topic_tools" type="transform" args="/scan /modified_scan sensor_msgs/LaserScan 'sensor_msgs.msg.LaserScan(header=std_msgs.msg.Header(seq=m.header.seq,stamp=m.header.stamp,frame_id=m.header.frame_id[4:]), angle_min=m.angle_min, angle_max=m.angle_max, angle_increment=m.angle_increment, time_increment=m.time_increment, scan_time=m.scan_time, range_min=m.range_min, range_max=m.range_max, ranges=m.ranges, intensities=m.intensities)' --import sensor_msgs std_msgs --wait-for-start"/> 
 </launch>
