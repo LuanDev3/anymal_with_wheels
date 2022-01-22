@@ -9,9 +9,6 @@
   <!-- Configuration of aww which you would like to simulate.
        See jackal_description for details. -->
 
-  <!-- Load aww's description. -->
-  <include file="$(find aww_description)/launch/description.launch"/>
-
   <!-- Spawn AWW -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "
 	      args="-urdf -model aww -param aww/robot_description -robot_namespace $(arg namespace) -x $(arg x) -y $(arg y) -z $(arg z) -R 0 -P 0 -Y $(arg yaw)

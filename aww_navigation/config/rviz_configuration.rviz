@@ -4,7 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
+        - /PoseWithCovariance1/Status1
       Splitter Ratio: 0.5
     Tree Height: 303
   - Class: rviz/Selection
@@ -51,22 +51,6 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: false
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-      Name: RobotModel
-      Robot Description: aww/robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: false
-      Visual Enabled: true
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: map
@@ -172,8 +156,12 @@ Visualization Manager:
           Value: false
         base:
           Value: true
+        base_footprint:
+          Value: true
         base_inertia:
           Value: false
+        base_stabilized:
+          Value: true
         battery:
           Value: false
         bottom_shell:
@@ -210,79 +198,81 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base:
-              LF_HAA:
-                LF_HIP:
-                  LF_hip_fixed:
-                    LF_HFE:
-                      LF_THIGH:
-                        LF_thigh_fixed:
-                          LF_KFE:
-                            LF_SHANK:
-                              LF_shank_fixed:
-                                LF_LEG:
-                                  LF_wheel_link:
-                                    {}
-              LH_HAA:
-                LH_HIP:
-                  LH_hip_fixed:
-                    LH_HFE:
-                      LH_THIGH:
-                        LH_thigh_fixed:
-                          LH_KFE:
-                            LH_SHANK:
-                              LH_shank_fixed:
-                                LH_LEG:
-                                  LH_wheel_link:
-                                    {}
-              RF_HAA:
-                RF_HIP:
-                  RF_hip_fixed:
-                    RF_HFE:
-                      RF_THIGH:
-                        RF_thigh_fixed:
-                          RF_KFE:
-                            RF_SHANK:
-                              RF_shank_fixed:
-                                RF_LEG:
-                                  RF_wheel_link:
-                                    {}
-              RH_HAA:
-                RH_HIP:
-                  RH_hip_fixed:
-                    RH_HFE:
-                      RH_THIGH:
-                        RH_thigh_fixed:
-                          RH_KFE:
-                            RH_SHANK:
-                              RH_shank_fixed:
-                                RH_LEG:
-                                  RH_wheel_link:
-                                    {}
-              base_inertia:
-                {}
-              battery:
-                {}
-              bottom_shell:
-                {}
-              docking_hatch_cover:
-                {}
-              face_front:
-                {}
-              face_rear:
-                {}
-              hatch:
-                {}
-              imu_link:
-                {}
-              lidar_cage:
-                velodyne_base_link:
-                  velodyne:
+            base_footprint:
+              base_stabilized:
+                base:
+                  LF_HAA:
+                    LF_HIP:
+                      LF_hip_fixed:
+                        LF_HFE:
+                          LF_THIGH:
+                            LF_thigh_fixed:
+                              LF_KFE:
+                                LF_SHANK:
+                                  LF_shank_fixed:
+                                    LF_LEG:
+                                      LF_wheel_link:
+                                        {}
+                  LH_HAA:
+                    LH_HIP:
+                      LH_hip_fixed:
+                        LH_HFE:
+                          LH_THIGH:
+                            LH_thigh_fixed:
+                              LH_KFE:
+                                LH_SHANK:
+                                  LH_shank_fixed:
+                                    LH_LEG:
+                                      LH_wheel_link:
+                                        {}
+                  RF_HAA:
+                    RF_HIP:
+                      RF_hip_fixed:
+                        RF_HFE:
+                          RF_THIGH:
+                            RF_thigh_fixed:
+                              RF_KFE:
+                                RF_SHANK:
+                                  RF_shank_fixed:
+                                    RF_LEG:
+                                      RF_wheel_link:
+                                        {}
+                  RH_HAA:
+                    RH_HIP:
+                      RH_hip_fixed:
+                        RH_HFE:
+                          RH_THIGH:
+                            RH_thigh_fixed:
+                              RH_KFE:
+                                RH_SHANK:
+                                  RH_shank_fixed:
+                                    RH_LEG:
+                                      RH_wheel_link:
+                                        {}
+                  base_inertia:
                     {}
-              remote:
-                {}
-              top_shell:
-                {}
+                  battery:
+                    {}
+                  bottom_shell:
+                    {}
+                  docking_hatch_cover:
+                    {}
+                  face_front:
+                    {}
+                  face_rear:
+                    {}
+                  hatch:
+                    {}
+                  imu_link:
+                    {}
+                  lidar_cage:
+                    velodyne_base_link:
+                      velodyne:
+                        {}
+                  remote:
+                    {}
+                  top_shell:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -333,7 +323,7 @@ Visualization Manager:
       Value: false
     - Alpha: 0.699999988079071
       Class: rviz/Map
-      Color Scheme: map
+      Color Scheme: costmap
       Draw Behind: false
       Enabled: true
       Name: Map
@@ -674,7 +664,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.009999999776482582
+      Size (m): 0.10000000149011612
       Style: Flat Squares
       Topic: /modified_scan
       Unreliable: false
@@ -727,6 +717,21 @@ Visualization Manager:
       Topic: /move_base/TrajectoryPlannerROS/global_plan
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /move_base/current_goal
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -755,25 +760,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.9891397953033447
+      Distance: 5.718223571777344
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 23.037456512451172
-        Y: 6.958399772644043
-        Z: 1.9952441453933716
+        X: 22.83017921447754
+        Y: 7.303937911987305
+        Z: 2.2907772064208984
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7903982400894165
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.853581428527832
+      Yaw: 4.903578281402588
     Saved: ~
 Window Geometry:
   Displays:

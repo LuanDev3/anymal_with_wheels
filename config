@@ -160,28 +160,28 @@
       type = Terminal
       uuid = e59ed4e0-4996-4abe-ab8b-7e2bae0933da
     [[[terminal3]]]
-      command = 'sleep 22; roslaunch aww_navigation pointcloud_to_laserscan.launch; bash'
+      command = 'sleep 16; roslaunch aww_navigation pointcloud_to_laserscan.launch; bash'
       order = 0
       parent = child3
       profile = default
       type = Terminal
       uuid = ac79d5db-6697-470e-a55b-ab42235adbaa
     [[[terminal4]]]
-      command = 'sleep 22; roslaunch aww_navigation aww_navigation.launch; bash'
+      command = 'sleep 16; roslaunch aww_navigation aww_navigation.launch; bash'
       order = 1
       parent = child3
       profile = default
       type = Terminal
       uuid = 794b49da-dbf3-4985-8f26-f6a38ce79daa
     [[[terminal5]]]
-      command = 'sleep 22; roslaunch aww_navigation rviz_for_navigation.launch; bash'
+      command = 'sleep 16; roslaunch aww_navigation rviz_for_navigation.launch; bash'
       order = 1
       parent = child2
       profile = default
       type = Terminal
       uuid = 4c86ec44-2e1d-491b-9d52-17dc9763745a
     [[[terminal6]]]
-      command = 'echo "nothing"; bash'
+      command = 'sleep 16; roslaunch aww_navigation odom_to_tf.launch; bash'
       order = 0
       parent = child8
       profile = default

@@ -14,9 +14,11 @@
 	    <param name="base_frame" value="base" />
   	</node> -->
 
+ <!--    <node pkg="tf" type="static_transform_publisher" name="static_world_to_odom_publisher" args="0 0 0 0 0 0 /map /odom 100" /> -->
+
   	<!-- Run move base -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-      <remap from="odom" to="aww/aww_velocity_controller/odom" />
+      <remap from="odom" to="aww/ground_truth/odometry" />
       <remap from="cmd_vel" to="/aww/aww_velocity_controller/cmd_vel" />
 
       <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />

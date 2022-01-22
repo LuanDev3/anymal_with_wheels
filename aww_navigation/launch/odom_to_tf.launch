@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+	<node name="odom_to_tf" pkg="message_to_tf" type="message_to_tf">
+		<param name="topic" value="aww/ground_truth/odometry" />
+		<param name="frame_id" value="odom" />
+		<param name="footprint_frame_id" value="base_footprint" />
+	</node>
+</launch>

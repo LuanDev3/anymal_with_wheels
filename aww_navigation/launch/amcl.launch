@@ -3,13 +3,13 @@
 
 <node pkg="amcl" type="amcl" name="amcl" output="screen">
   <remap from="scan"      to="modified_scan"/>
-  <remap from="base_link"      to="base"/>
+  <remap from="base_link"      to="base_footprint"/>
 
-  <param name="use_map_topic" value="false"/>
+  <param name="use_map_topic" value="true"/>
   <!-- Publish scans from best pose at a max of 10 Hz -->
   <param name="odom_model_type" value="diff"/>
   <param name="odom_alpha5" value="0.1"/>
-  <param name="gui_publish_rate" value="10.0"/>
+  <param name="gui_publish_rate" value="30.0"/>
   <param name="laser_max_beams" value="30"/>
   <param name="min_particles" value="500"/>
   <param name="max_particles" value="5000"/>
@@ -32,10 +32,13 @@
   <param name="update_min_d" value="0.2"/>
   <param name="update_min_a" value="0.5"/>
   <param name="odom_frame_id" value="odom"/>
-  <param name="base_frame_id" value="base"/>
+  <param name="base_frame_id" value="base_footprint"/>
   <param name="resample_interval" value="1"/>
-  <param name="transform_tolerance" value="0.1"/>
+  <param name="transform_tolerance" value="0.3"/>
   <param name="recovery_alpha_slow" value="0.0"/>
   <param name="recovery_alpha_fast" value="0.0"/>
+  <param name="initial_pose_x" value="22.703"/>
+  <param name="initial_pose_y" value="8.902"/>
+  <param name="initial_pose_a" value="-1.641"/>
 </node>
 </launch>
