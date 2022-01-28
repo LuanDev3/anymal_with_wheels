@@ -50,6 +50,7 @@ class AwwLegIKResolver:
 
 
 	def getPhi(self, px, pz):
+		print px, pz
 		cos_eta = (px**2 + pz**2 - THIGH_LENGTH**2 - KNEE_OFFSET**2 - LEG_LENGTH**2)/(2*THIGH_LENGTH*VIRTUAL_LEG_LENGTH)
 		if cos_eta > 1:
 			raise ImpossibleTrajectory

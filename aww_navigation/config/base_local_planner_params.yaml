@@ -1,25 +1,75 @@
 TrajectoryPlannerROS:
-  max_vel_x: 15
-  min_vel_x: 0.0
-  max_vel_theta: 15
-  min_vel_thtea: -15
-  min_in_place_vel_theta: 1
-  escape_vel: -0.2
+  max_vel_x: 12
+  min_vel_x: 0.2
+  max_vel_theta: 12
+  min_vel_theta: -8
+  min_in_place_vel_theta: 8
+  escape_vel: -1.2
 
-  acc_lim_theta: 15
-  acc_lim_x: 15
+  acc_lim_theta: 12
+  acc_lim_x: 12
+  acc_lim_y: 0
 
   holonomic_robot: false
 
-  sim_time: 3
-  vx_samples: 3
-  vy_samples: 0
-  vtheta_samples: 20
+  sim_time: 1.6
+  vx_samples: 8
+  vtheta_samples: 12
 
-  yaw_goal_tolerance: 0.15
+  yaw_goal_tolerance: 0.05
   xy_goal_tolerance: 0.15
 
-  meter_scoring: true
+  meter_scoring: false
   path_distance_bias: 4.0
   goal_distance_bias: 1.0
   occdist_scale: 0.01
+
+  dwa: false
+  simple_attractor: true
+  heading_score: true
+
+DWAPlannerROS: 
+  acc_lim_theta: 12
+  acc_lim_trans: 12 
+  acc_lim_x: 12
+  acc_lim_y: 0 
+
+  max_vel_x: 12
+  min_vel_x: 0.2
+
+  max_vel_y: 0
+  min_vel_y: 0 
+
+  max_vel_theta: 12
+  min_vel_theta: 0.15
+
+  max_vel_trans: 12 
+  min_vel_trans: 0.2
+
+  prune_plan: true
+
+  sim_time: 1.6
+  sim_granularity: 0.025 
+  path_distance_bias: 1.0
+  goal_distance_bias: 0.8
+  occdist_scale: 0.01
+  stop_time_buffer: 0.2 
+  oscillation_reset_dist: 0.05 
+  forward_point_distance: 0.325 
+  scaling_speed: 0.25 
+  max_scaling_factor: 0.2 
+
+  vx_samples: 8
+  vy_samples: 0
+  vtheta_samples: 15 
+
+  xy_goal_tolerance: 0.2 
+  yaw_goal_tolerance: 0.05 
+  rot_stopped_vel: 0.01 
+  trans_stopped_vel: 0.01
+
+TebLocalPlannerROS:
+  max_vel_x: 6
+  max_vel_theta: 4
+  acc_lim_x: 3
+  acc_lim_theta: 2

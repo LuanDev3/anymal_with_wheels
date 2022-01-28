@@ -76,7 +76,7 @@
       type = Terminal
       uuid = e59ed4e0-4996-4abe-ab8b-7e2bae0933de
     [[[terminal3]]]
-      command = 'roslaunch aww_gazebo world_construction.launch gui:=false; bash'
+      command = 'roslaunch aww_gazebo world_construction.launch gui:=true; bash'
       order = 0
       parent = child3
       profile = default
@@ -153,7 +153,7 @@
       type = Terminal
       uuid = aedcc745-cb43-4bd0-952b-8edeccb774da
     [[[terminal2]]]
-      command = 'echo "nothing"; bash'
+      command = 'rosrun aww_navigation navigation_example.py; bash'
       order = 1
       parent = child7
       profile = default

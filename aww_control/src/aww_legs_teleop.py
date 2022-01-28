@@ -82,11 +82,22 @@ class MoveGroupInteface(object):
         self.rearRightLegAction.wait_for_server()
 
         rospy.logdebug(" -- Getting robot move groups")
-        self.allLegsMoveGroup    = moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
-        self.frontLeftMoveGroup  = moveit_commander.MoveGroupCommander("front_left_leg", "aww/robot_description")
-        self.frontRightMoveGroup = moveit_commander.MoveGroupCommander("front_right_leg", "aww/robot_description")
-        self.rearLeftMoveGroup   = moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
-        self.rearRightMoveGroup  = moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
+        flag = True
+        self.allLegsMoveGroup = None
+        self.frontLeftMoveGroup = None
+        self.frontRightMoveGroup = None
+        self.rearLeftMoveGroup = None
+        self.rearRightMoveGroup = None
+        while(flag):
+            try:
+                self.allLegsMoveGroup    = self.allLegsMoveGroup    if self.allLegsMoveGroup else moveit_commander.MoveGroupCommander("all_legs", "aww/robot_description")
+                self.frontLeftMoveGroup  = self.frontLeftMoveGroup  if self.frontLeftMoveGroup else moveit_commander.MoveGroupCommander("front_left_leg", "aww/robot_description")
+                self.frontRightMoveGroup = self.frontRightMoveGroup if self.frontRightMoveGroup else moveit_commander.MoveGroupCommander("front_right_leg", "aww/robot_description")
+                self.rearLeftMoveGroup   = self.rearLeftMoveGroup   if self.rearLeftMoveGroup else moveit_commander.MoveGroupCommander("rear_left_leg", "aww/robot_description")
+                self.rearRightMoveGroup  = self.rearRightMoveGroup  if self.rearRightMoveGroup else moveit_commander.MoveGroupCommander("rear_right_leg", "aww/robot_description")
+                flag = False
+            except Exception:
+                flag = True
         self.awwChangePosture    = aww_change_posture.AwwChangePosture(self.allLegsMoveGroup)
 
         rospy.logdebug(" -- Setting robot publishers")
@@ -136,6 +147,10 @@ class MoveGroupInteface(object):
             y = [gain * (element + translation) ** 2 + vDisplacement for element in x]
             return x, y
 
+        def createInverseParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
+            x, y = createParabolicPath(hDisplacement=hDisplacement, vDisplacement=vDisplacement, numberOfPoints=numberOfPoints)
+            return [-element for element in x], y
+
         def createLinearPath(hDisplacement = 0.2, vDisplacement = None, numberOfPoints=10):
             x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
             y = [0.0 for element in x]
@@ -147,6 +162,7 @@ class MoveGroupInteface(object):
 
         createPath = {
             'PARABOLIC': createParabolicPath,
+            'INV-PARABOLIC': createInverseParabolicPath,
             'LINEAR': createLinearPath,
             'INV-LINEAR': createInverseLinearPath
         }
@@ -186,10 +202,10 @@ class MoveGroupInteface(object):
     def discontinuousGateStartPosition(self, displacement = 0.25):
         rospy.loginfo(formatString("Moving robot to initial position to start gate!", Color.BLUE))
         self.awwLegIkResolver.solution = aww_ik.INTERNAL_ELBOW
-        plan = self.planCartesianPath("frontRightMoveGroup", 'INV-LINEAR', displacement)
+        plan = self.planCartesianPath("frontRightMoveGroup", 'INV-PARABOLIC', displacement)
         self.executePlan(plan, "frontRightMoveGroup")
         self.awwLegIkResolver.solution = aww_ik.INTERNAL_KNEE
-        plan = self.planCartesianPath("rearRightMoveGroup", 'LINEAR', displacement)
+        plan = self.planCartesianPath("rearRightMoveGroup", 'PARABOLIC', displacement)
         self.executePlan(plan, "rearRightMoveGroup")
         time.sleep(0.5)
 

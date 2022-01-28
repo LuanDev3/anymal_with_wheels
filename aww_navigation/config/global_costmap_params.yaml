@@ -2,7 +2,7 @@ global_costmap:
   global_frame: map
   rolling_window: false
   robot_base_frame: base_footprint
-  update_frequency: 10.0
+  update_frequency: 5.0
   transform_tolerance: 1
 
   plugins:

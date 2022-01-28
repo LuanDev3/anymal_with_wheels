@@ -5,27 +5,32 @@
     <node name="map_server" pkg="map_server" type="map_server" args="$(find aww_navigation)/map/office_construction_without_obstacles.yaml"/>
 
  	  <!--- Run AMCL -->
-    <include file="$(find aww_navigation)/launch/amcl.launch" />
+    <!-- <include file="$(find aww_navigation)/launch/amcl.launch" /> -->
 
     <!--- Run Gmapping -->
- <!--    <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
+<!-- <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
 	    <remap from="scan" to="modified_scan" />
 	    <param name="odom_frame" value="odom" />
 	    <param name="base_frame" value="base" />
   	</node> -->
 
- <!--    <node pkg="tf" type="static_transform_publisher" name="static_world_to_odom_publisher" args="0 0 0 0 0 0 /map /odom 100" /> -->
+    <node pkg="tf" type="static_transform_publisher" name="static_world_to_odom_publisher" args="16.800 0.829 0 3.130 -0 0 /map /odom 100" />
 
   	<!-- Run move base -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
       <remap from="odom" to="aww/ground_truth/odometry" />
       <remap from="cmd_vel" to="/aww/aww_velocity_controller/cmd_vel" />
 
-      <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+      <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+     <!--  <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /> -->
+
+      <param name="controller_frequency" value="40" />
       <rosparam file="$(find aww_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
       <rosparam file="$(find aww_navigation)/config/local_costmap_params.yaml" command="load" />
       <rosparam file="$(find aww_navigation)/config/global_costmap_params.yaml" command="load" />
       <rosparam file="$(find aww_navigation)/config/base_local_planner_params.yaml" command="load" />
+      <!-- <rosparam file="$(find aww_navigation)/config/teb_local_planner_params.yaml" command="load" /> -->
+
     </node>
 
 </launch>

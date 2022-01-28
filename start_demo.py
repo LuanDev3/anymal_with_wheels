@@ -6,6 +6,7 @@ import os
 import getpass
 import time
 import rospkg
+import argparse
 
 def replace():
 	rospack = rospkg.RosPack()
@@ -15,7 +16,7 @@ def replace():
 	subprocess.call('mv ~/.config/terminator/config ~/.config/terminator/config.bak', shell = True)
 	subprocess.call('cp '+ file + ' ~/.config/terminator/config', shell = True)
 
-def run():
+def run(args):
 	try:
 		print "Killing all ros instances..."
 		killROS = subprocess.Popen(['pkill', '-9', '-f', 'ros']) # finishing ros
@@ -26,7 +27,7 @@ def run():
 		subprocess.call('roscore &', shell = True,  stdout=FNULL, stderr=subprocess.STDOUT)
 		time.sleep(1)
 		print "Starting demo..."
-		subprocess.call('terminator -l PFC2 &', shell = True)
+		_ = subprocess.call('terminator -l PFC2 &', shell = True) if args.Navigation else None
 		time.sleep(1)
 		subprocess.call('terminator -l PFC', shell = True)
 		while True:
@@ -44,10 +45,13 @@ def restoreConfig():
 
 if __name__ == '__main__':
 	try:	
+		parser = argparse.ArgumentParser()
+		parser.add_argument("-n", "--Navigation", help = "Use navigation")
+		args = parser.parse_args()
 		subprocess.call('exit', shell = True)
 		replace()
 		time.sleep(1)
-		run()
+		run(args)
 		time.sleep(1)
 		restoreConfig()
 		subprocess.call('exit', shell = True)
