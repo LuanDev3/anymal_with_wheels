@@ -11,6 +11,8 @@ from utils import aww_change_posture
 
 
 WHEELED = "wheeled"
+WALKING = "walking"
+FREE  = "free"
 
 class Color:
     YELLOW = '\033[93m'
@@ -27,6 +29,7 @@ class AwwTeleop():
         rospy.loginfo("AWW teleop initialized!")
         rospack = rospkg.RosPack()
         self.path = rospack.get_path('aww_control')
+        self.walkStatus = True
         self.allow_control = True
         self.joy_mapper = rospy.get_param('~joy_config', self.path + '/config/joy_mapper.yaml')
         self.awwChangePosture = aww_change_posture.AwwChangePosture()
@@ -51,16 +54,23 @@ class AwwTeleop():
 
         rospy.Subscriber("/joy", Joy, self.joyCallback)
         rospy.Subscriber("/aww/mode", String, self.handleRobotMode)
+        rospy.Subscriber("/aww/leg_control_status", String, self.handleLegControlStatus)
         self.pub = rospy.Publisher('/aww/cmd_vel', Twist, queue_size=1)
 
     def handleRobotMode(self, data):
         if  data.data == WHEELED :
-            rospy.loginfo("Receiving mode wheleed! Now you will able to control the robot using the joystick!")
+            rospy.loginfo("Receiving mode wheleed! wainting walk mode to finish!")
+            while(self.walkStatus != FREE):
+                pass
+            rospy.loginfo("Now you will able to control the robot using the joystick!")
             self.awwChangePosture.goToPosition(aww_change_posture.HOME_POSITION)
             self.allow_control = True
         else:
             rospy.loginfo("Mode wheleed disabled! The joystick commands for control the robot are disabled...")
             self.allow_control = False
+
+    def handleLegControlStatus(self, data):
+        self.walkStatus = data.data
 
     def joyCallback(self, data):
         if (data.buttons[self.boost_position]):

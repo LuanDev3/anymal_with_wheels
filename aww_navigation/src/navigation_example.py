@@ -66,7 +66,7 @@ class Navigation():
         rospy.loginfo("Starting navigation!")
         self.publish_mode(WHEELED)
         time.sleep(10)
-        self.send_goal_and_wait(24.796, 1.62, 0.911, -0.410)
+        self.send_goal_and_wait(24.296, 1.62, 0.911, -0.410)
         self.publish_mode(LEGGED)
         time.sleep(5)
         overcame_obstacle = False

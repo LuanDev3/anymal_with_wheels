@@ -14,6 +14,8 @@ from utils import aww_ik, aww_change_posture
 
 WHEELED = "wheeled"
 LEGGED  = "legged"
+WALKING = "walking"
+FREE  = "free"
 
 moveGroupPrefixes = {
     "frontLeftMoveGroup" : "LF",
@@ -56,6 +58,30 @@ def findNameForMovegroup(moveGroupName):
     return " l".join(legName.split("L")) if "L" in legName else " r".join(legName.split("R"))
 
 
+def createParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
+    x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
+    gain = -vDisplacement/((hDisplacement/2)**2)
+    translation = -hDisplacement/2
+    y = [gain * (element + translation) ** 2 + vDisplacement for element in x]
+    return x, y
+
+
+def createInverseParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
+    x, y = createParabolicPath(hDisplacement=hDisplacement, vDisplacement=vDisplacement, numberOfPoints=numberOfPoints)
+    return [-element for element in x], y
+
+
+def createLinearPath(hDisplacement = 0.2, vDisplacement = None, numberOfPoints=10):
+    x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
+    y = [0.0 for element in x]
+    return x, y
+
+
+def createInverseLinearPath(hDisplacement = 0.2, vDisplacement = None, numberOfPoints=10):
+    x, y = createLinearPath(hDisplacement=hDisplacement, vDisplacement=vDisplacement, numberOfPoints=numberOfPoints)
+    return [-element for element in x], y
+
+
 class MoveGroupInteface(object):
 
     def __init__(self):
@@ -70,6 +96,13 @@ class MoveGroupInteface(object):
 
         rospy.logdebug(" -- Starting aww inverse kinematic leg resolver")
         self.awwLegIkResolver = aww_ik.AwwLegIKResolver()
+
+        self.createPath = {
+            'PARABOLIC': createParabolicPath,
+            'INV-PARABOLIC': createInverseParabolicPath,
+            'LINEAR': createLinearPath,
+            'INV-LINEAR': createInverseLinearPath
+        }
 
         rospy.logdebug(" -- Getting action clients")
         self.frontLeftLegAction  = actionlib.SimpleActionClient('/aww/front_left_leg_controller/follow_joint_trajectory', FollowJointTrajectoryAction)
@@ -100,12 +133,8 @@ class MoveGroupInteface(object):
                 flag = True
         self.awwChangePosture    = aww_change_posture.AwwChangePosture(self.allLegsMoveGroup)
 
-        rospy.logdebug(" -- Setting robot publishers")
-        self.frontLeftTrajectoryPublishers  = rospy.Publisher('/move_group/front_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
-        self.frontRightTrajectoryPublishers = rospy.Publisher('/move_group/front_right_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
-        self.rearLeftTrajectoryPublishers   = rospy.Publisher('/move_group/rear_left_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
-        self.rearfrontTrajectoryPublishers  = rospy.Publisher('/move_group/rear_right_leg/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
-        self.allLegsTrajectoryPublishers    = rospy.Publisher('/move_group/all_legs/display_planned_path',  moveit_msgs.msg.DisplayTrajectory, queue_size=20)
+        rospy.logdebug(" -- Setting robot publisher")
+        self.walkStatus  = rospy.Publisher('/aww/leg_control_status', String, queue_size=1)
 
         rospy.logdebug("-- Setting robot subscribes")
         rospy.Subscriber("/aww/mode", String, self.handleRobotMode)
@@ -140,38 +169,12 @@ class MoveGroupInteface(object):
 
 
     def planCartesianPath(self, moveGroup, type, hDisplacement = 0.3, vDisplacement = 0.1, numberOfPoints = 20, scale=1):
-        def createParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
-            x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
-            gain = -vDisplacement/((hDisplacement/2)**2)
-            translation = -hDisplacement/2
-            y = [gain * (element + translation) ** 2 + vDisplacement for element in x]
-            return x, y
-
-        def createInverseParabolicPath(hDisplacement = 0.2, vDisplacement = 0.1, numberOfPoints=10):
-            x, y = createParabolicPath(hDisplacement=hDisplacement, vDisplacement=vDisplacement, numberOfPoints=numberOfPoints)
-            return [-element for element in x], y
-
-        def createLinearPath(hDisplacement = 0.2, vDisplacement = None, numberOfPoints=10):
-            x = [float(num) for num in numpy.linspace(0.0, hDisplacement, numberOfPoints)]
-            y = [0.0 for element in x]
-            return x, y
-
-        def createInverseLinearPath(hDisplacement = 0.2, vDisplacement = None, numberOfPoints=10):
-            x, y = createLinearPath(hDisplacement=hDisplacement, vDisplacement=vDisplacement, numberOfPoints=numberOfPoints)
-            return [-element for element in x], y
-
-        createPath = {
-            'PARABOLIC': createParabolicPath,
-            'INV-PARABOLIC': createInverseParabolicPath,
-            'LINEAR': createLinearPath,
-            'INV-LINEAR': createInverseLinearPath
-        }
 
         rospy.loginfo("Creating plan for %s leg!" % findNameForMovegroup(moveGroup))
         prefix = moveGroupPrefixes[moveGroup]
         moveGroup = getattr(self, moveGroup)
         rospy.logdebug(" -- Creating trajectory...")
-        xValues, zValues = createPath[type](hDisplacement, vDisplacement, numberOfPoints)
+        xValues, zValues = self.createPath[type](hDisplacement, vDisplacement, numberOfPoints)
         wpose = moveGroup.get_current_pose().pose
         normPose = self.normalizeTranslationEEPose(wpose, "$_thigh_fixed".replace("$", prefix))
         wpose.position.x = normPose[0]
@@ -249,20 +252,37 @@ class MoveGroupInteface(object):
 
 
     def controlManager(self):
-        if not(self.lastMode == self.mode):
-            rospy.loginfo(formatString("Mode changed to: %s") %self.mode.getMode())
-            self.lastMode.wheeled = self.mode.wheeled
-            self.lastMode.legged  = self.mode.legged
-            if self.mode.legged:
-                self.awwChangePosture.goToPosition(aww_change_posture.WALK_POSITION)
-                self.discontinuousGateStartPosition()
-                while(1):
-                    self.moveLeg("frontRightMoveGroup", 'PARABOLIC')
-                    self.moveBodyToFront()
-                    self.moveLeg("rearLeftMoveGroup", 'PARABOLIC')
-                    self.moveLeg("frontLeftMoveGroup", 'PARABOLIC')
-                    self.moveBodyToFront()
-                    self.moveLeg("rearRightMoveGroup", 'PARABOLIC')
+        rate = rospy.Rate(30) # 30hz
+        while not rospy.is_shutdown():
+            if not(self.lastMode == self.mode):
+                rospy.loginfo(formatString("Mode changed to: %s") %self.mode.getMode())
+                self.lastMode.wheeled = self.mode.wheeled
+                self.lastMode.legged  = self.mode.legged
+                if self.mode.legged:
+                    self.walkStatus.publish(WALKING)
+                    self.awwChangePosture.goToPosition(aww_change_posture.WALK_POSITION)
+                    self.discontinuousGateStartPosition()
+                    while(True):
+                        self.moveLeg("frontRightMoveGroup", 'PARABOLIC')
+                        if self.mode.wheeled:
+                            break
+                        self.moveBodyToFront()
+                        if self.mode.wheeled:
+                            break
+                        self.moveLeg("rearLeftMoveGroup", 'PARABOLIC')
+                        if self.mode.wheeled:
+                            break
+                        self.moveLeg("frontLeftMoveGroup", 'PARABOLIC')
+                        if self.mode.wheeled:
+                            break
+                        self.moveBodyToFront()
+                        if self.mode.wheeled:
+                            break
+                        self.moveLeg("rearRightMoveGroup", 'PARABOLIC')
+                        if self.mode.wheeled:
+                            break
+                    self.walkStatus.publish(FREE)
+            rate.sleep()
 
 
 def main():
@@ -272,10 +292,7 @@ def main():
     try:
         interface = MoveGroupInteface()
         interface.awwChangePosture.goToPosition(aww_change_posture.HOME_POSITION)
-        rate = rospy.Rate(30) # 10hz
-        while not rospy.is_shutdown():
-            interface.controlManager()
-            rate.sleep()
+        interface.controlManager()
     except rospy.ROSInterruptException:
         return
     except KeyboardInterrupt:

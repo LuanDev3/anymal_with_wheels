@@ -14,7 +14,7 @@
 	    <param name="base_frame" value="base" />
   	</node> -->
 
-    <node pkg="tf" type="static_transform_publisher" name="static_world_to_odom_publisher" args="16.800 0.829 0 3.130 -0 0 /map /odom 100" />
+    <node pkg="tf" type="static_transform_publisher" name="static_world_to_odom_publisher" args="16.800 0.8 0 3.130 -0 0 /map /odom 100" />
 
   	<!-- Run move base -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
